@@ -42,7 +42,7 @@ evntBus.$on('add_item', (item) => {
     print_on_display(item.item_code, item.item_name, item.qty, item.rate);
 });
 
-evntBus.$on('set_company', (data) => {
+evntBus.$on('connect_to_display', (data) => {
     console.log("Connecting to customer display");
     connect_customer_display();
 });

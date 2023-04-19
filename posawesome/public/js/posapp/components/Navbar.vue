@@ -81,6 +81,14 @@
                     <v-list-item-title>{{ __('About') }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
+                <v-list-item @click="connect_to_display">
+                  <v-list-item-icon>
+                    <v-icon>mdi-information-outline</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ __('Connect Display') }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
               </v-list-item-group>
             </v-list>
           </v-card>
@@ -179,6 +187,9 @@ export default {
         '_blank'
       );
       win.focus();
+    },
+    connect_to_display() {
+      evntBus.$emit('connect_to_display');
     },
     close_shift_dialog() {
       evntBus.$emit('open_closing_dialog');

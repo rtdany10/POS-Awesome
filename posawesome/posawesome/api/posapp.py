@@ -532,9 +532,11 @@ def set_batch_nos_for_bundels(doc, warehouse_field, throw=False):
         warehouse = d.get(warehouse_field, None)
         if has_batch_no and warehouse and qty > 0:
             if not d.batch_no:
-                d.batch_no = get_batch_no(
+                batch_no = get_batch_no(
                     d.item_code, warehouse, qty, throw, d.serial_no
                 )
+                if batch_no:
+                    d.batch_no = batch_no.get("batch_no")
             else:
                 batch_qty = get_batch_qty(batch_no=d.batch_no, warehouse=warehouse)
                 if flt(batch_qty, d.precision("qty")) < flt(qty, d.precision("qty")):
@@ -805,9 +807,11 @@ def get_item_detail(item, doc=None, warehouse=None, price_list=None):
     item = json.loads(item)
     item_code = item.get("item_code")
     if warehouse and item.get("has_batch_no") and not item.get("batch_no"):
-        item["batch_no"] = get_batch_no(
+        batch_no = get_batch_no(
             item_code, warehouse, item.get("qty"), False, item.get("d")
         )
+        if batch_no:
+            item["batch_no"] = batch_no.get("batch_no")
     item["selling_price_list"] = price_list
     max_discount = frappe.get_value("Item", item_code, "max_discount")
     res = get_item_details(
@@ -869,6 +873,8 @@ def create_customer(
             customer.territory = territory
         customer.save(ignore_permissions=True)
         return customer
+    else:
+        frappe.throw(_("Customer already exists"))
 
 
 @frappe.whitelist()
@@ -1517,7 +1523,7 @@ def set_payment_schedule(doc):
                 base_payment_amount=base_grand_total,
             )
             doc.append("payment_schedule", data)
-    frappe.msgprint(str(doc.outstanding_amount))
+
     for d in doc.get("payment_schedule"):
         if d.invoice_portion:
             d.payment_amount = flt(

@@ -3,6 +3,7 @@
         "public/js/toConsole.js"
     ],
     "js/posapp.min.js": [
-        "public/js/posapp/posapp.js"
+        "public/js/posapp/posapp.js",
+        "public/js/posapp/components/customer_display.js"
     ]
 }

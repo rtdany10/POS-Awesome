@@ -12,15 +12,26 @@ async function connect_customer_display() {
     await cd_port.open({ baudRate: 9600 });
     cd_textEncoder = new TextEncoderStream();
     cd_writableStreamClosed = cd_textEncoder.readable.pipeTo(cd_port.writable);
+
+    // clear the display
+    await clear_display();
+}
+
+async function clear_display() {
+    let c_writer = cd_port.writable.getWriter();
+    let data = new Uint8Array([0x0C]);
+    await c_writer.write(data);
+    c_writer.releaseLock();
 }
 
 async function print_on_display(item_code, item_name, qty, rate) {
     if (!("serial" in navigator) || !cd_port) return;
-    let writer = cd_textEncoder.writable.getWriter();
-
+    
     // clear the display
-    await writer.write(new Array(40).join(" "));
-
+    // await writer.write(new Array(40).join(" "));
+    await clear_display();
+    
+    let writer = cd_textEncoder.writable.getWriter();
     // generate the text
     let print_text = " " + String(qty || 1) + "    " + String(rate || "");
     if (print_text.length > 19) {

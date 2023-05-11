@@ -24,7 +24,7 @@ async function clear_display() {
     c_writer.releaseLock();
 }
 
-async function print_on_display(item_code, item_name, qty, rate) {
+async function print_on_display(item_code, item_name, qty, rate, subtotal) {
     if (!("serial" in navigator) || !cd_port) return;
     
     // clear the display
@@ -33,7 +33,7 @@ async function print_on_display(item_code, item_name, qty, rate) {
     
     let writer = cd_textEncoder.writable.getWriter();
     // generate the text
-    let print_text = " " + String(qty || 1) + "    " + String(rate || "");
+    let print_text = " " + String(qty || 1) + "    " + String(rate || "") + "    " + String(subtotal || "");
     if (print_text.length > 19) {
         print_text = print_text.substring(0, 19);
     } else {
@@ -48,9 +48,9 @@ async function print_on_display(item_code, item_name, qty, rate) {
     writer.releaseLock();
 }
 
-evntBus.$on('add_item', (item) => {
+evntBus.$on('print_item_on_display', (item, subtotal) => {
     console.log("Printing on customer display");
-    print_on_display(item.item_code, item.item_name, item.qty, item.rate);
+    print_on_display(item.item_code, item.item_name, item.qty, item.rate, subtotal);
 });
 
 evntBus.$on('connect_to_display', (data) => {

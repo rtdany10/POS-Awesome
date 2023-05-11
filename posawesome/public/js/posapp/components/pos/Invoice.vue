@@ -899,6 +899,7 @@ export default {
         }
         this.items.unshift(new_item);
         this.update_item_detail(new_item);
+        evntBus.$emit('print_item_on_display', new_item, this.subtotal);
       } else {
         const cur_item = this.items[index];
         this.update_items_details([cur_item]);
@@ -936,6 +937,7 @@ export default {
           }
         }
         this.set_serial_no(cur_item);
+        evntBus.$emit('print_item_on_display', cur_item, this.subtotal);
       }
       this.$forceUpdate();
     },

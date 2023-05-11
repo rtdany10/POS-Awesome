@@ -3,35 +3,25 @@
 
 import { evntBus } from '../bus';
 
-let cd_port, cd_textEncoder, cd_writableStreamClosed;
+let cd_port, writer;
+let cd_textEncoder = new TextEncoderStream();
 
 async function connect_customer_display() {
     if (!("serial" in navigator)) return;
     if (cd_port) return;
     cd_port = await navigator.serial.requestPort();
     await cd_port.open({ baudRate: 9600 });
-    cd_textEncoder = new TextEncoderStream();
-    cd_writableStreamClosed = cd_textEncoder.readable.pipeTo(cd_port.writable);
-
-    // clear the display
-    await clear_display();
-}
-
-async function clear_display() {
-    let c_writer = cd_port.writable.getWriter();
-    let data = new Uint8Array([0x0C]);
-    await c_writer.write(data);
-    c_writer.releaseLock();
+    cd_textEncoder.readable.pipeTo(cd_port.writable);
 }
 
 async function print_on_display(item_code, item_name, qty, rate, subtotal) {
     if (!("serial" in navigator) || !cd_port) return;
     
+    writer = cd_textEncoder.writable.getWriter();
     // clear the display
     // await writer.write(new Array(40).join(" "));
-    await clear_display();
-    
-    let writer = cd_textEncoder.writable.getWriter();
+    await writer.write('\f');
+
     // generate the text
     let print_text = " " + String(qty || 1) + "    " + String(rate || "") + "    " + String(subtotal || "");
     if (print_text.length > 19) {
@@ -39,10 +29,15 @@ async function print_on_display(item_code, item_name, qty, rate, subtotal) {
     } else {
         print_text = print_text + (new Array(19 - print_text.length).join(" "));
     }
-    let item_text = String(item_code) + ": " + String(item_name)
-    if (item_text.length > 17) item_text = item_text.substring(0, 17);
-    print_text = print_text + " " + item_text
 
+    let item_text = String(item_code) + ": " + String(item_name)
+    if (item_text.length > 19) {
+        item_text = item_text.substring(0, 19);
+    } else {
+        item_text = item_text + (new Array(19 - item_text.length).join(" "));
+    }
+
+    print_text = item_text + print_text
     // print and release the lock
     await writer.write(print_text);
     writer.releaseLock();

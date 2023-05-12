@@ -857,6 +857,7 @@ export default {
       if (idx >= 0) {
         this.expanded.splice(idx, 1);
       }
+      evntBus.$emit('print_item_on_display', item, this.total_qty, this.subtotal);
     },
 
     add_one(item) {
@@ -866,6 +867,7 @@ export default {
       }
       this.calc_sotck_gty(item, item.qty);
       this.$forceUpdate();
+      evntBus.$emit('print_item_on_display', item, this.total_qty, this.subtotal);
     },
     subtract_one(item) {
       item.qty--;
@@ -874,6 +876,7 @@ export default {
       }
       this.calc_sotck_gty(item, item.qty);
       this.$forceUpdate();
+      evntBus.$emit('print_item_on_display', item, this.total_qty, this.subtotal);
     },
 
     add_item(item) {
@@ -899,7 +902,7 @@ export default {
         }
         this.items.unshift(new_item);
         this.update_item_detail(new_item);
-        evntBus.$emit('print_item_on_display', new_item, this.subtotal);
+        evntBus.$emit('print_item_on_display', new_item, this.total_qty, this.subtotal);
       } else {
         const cur_item = this.items[index];
         this.update_items_details([cur_item]);
@@ -937,7 +940,7 @@ export default {
           }
         }
         this.set_serial_no(cur_item);
-        evntBus.$emit('print_item_on_display', cur_item, this.subtotal);
+        evntBus.$emit('print_item_on_display', cur_item, this.total_qty, this.subtotal);
       }
       this.$forceUpdate();
     },

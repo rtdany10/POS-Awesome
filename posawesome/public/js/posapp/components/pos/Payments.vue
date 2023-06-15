@@ -165,6 +165,7 @@
               v-model="loyalty_amount"
               type="number"
               :prefix="invoice_doc.currency"
+              :readonly="available_pioints_amount < pos_settings.min_loyalty_points"
             ></v-text-field>
           </v-col>
           <v-col cols="5">
@@ -1313,7 +1314,15 @@ export default {
         this.invoice_doc.redeem_loyalty_points = 0;
         this.invoice_doc.loyalty_points = 0;
         evntBus.$emit('show_mesage', {
-          text: `Loyalty Amount can not be more then ${this.available_pioints_amount}`,
+          text: `Loyalty Amount cannot be more than ${this.available_pioints_amount}`,
+          color: 'error',
+        });
+      } else if (value < this.pos_settings.min_loyalty_points) {
+        this.invoice_doc.loyalty_amount = 0;
+        this.invoice_doc.redeem_loyalty_points = 0;
+        this.invoice_doc.loyalty_points = 0;
+        evntBus.$emit('show_mesage', {
+          text: `Loyalty Amount cannot be less than ${this.pos_settings.min_loyalty_points}`,
           color: 'error',
         });
       } else {

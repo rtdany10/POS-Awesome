@@ -12,7 +12,7 @@
         color="info"
       ></v-progress-linear>
       <v-row class="items px-2 py-1">
-        <v-col class="pb-0 mb-2">
+        <v-col :cols="9" class="pb-0 mb-2">
           <v-text-field
             dense
             clearable
@@ -28,6 +28,17 @@
             @keydown.enter="search_onchange"
             ref="debounce_search"
           ></v-text-field>
+        </v-col>
+        <v-col class="pb-0 mb-2">
+          <v-select
+            dense
+            outlined
+            hide-details
+            background-color="white"
+            :items="['AUTO', 'WEIGHING MACHINE', 'OTHER']"
+            label="Barcode Type"
+            v-model="barcode_search_type"
+          ></v-select>
         </v-col>
         <v-col cols="3" class="pb-0 mb-2" v-if="pos_profile.posa_input_qty">
           <v-text-field
@@ -190,6 +201,7 @@ export default {
     customer_price_list: null,
     new_line: false,
     qty: 1,
+    barcode_search_type: 'AUTO',
   }),
 
   watch: {
@@ -247,6 +259,7 @@ export default {
           price_list: vm.customer_price_list,
           item_group: gr,
           search_value: sr,
+          barcode_search_type: vm.barcode_search_type,
         },
         callback: function (r) {
           if (r.message) {
@@ -342,9 +355,18 @@ export default {
       if (!this.filtred_items.length || !this.first_search) {
         return;
       }
-      const qty = this.get_item_qty(this.first_search);
+      // const qty = this.get_item_qty(this.first_search);
       const new_item = { ...this.filtred_items[0] };
-      new_item.qty = flt(qty);
+      // new_item.qty = flt(qty);
+      let item_code_length = (this.pos_profile.item_code_length || 8)
+      if (this.search.length >= item_code_length && this.barcode_search_type != "OTHER") {
+        let item_code = this.search.substr(2, item_code_length);
+        new_item.qty = this.search.substr((2 + item_code_length), 5)/1000;
+        new_item.uom = new_item.stock_uom;
+        if (new_item.item_code == item_code) {
+          match = true;
+        }
+      }
       new_item.item_barcode.forEach((element) => {
         if (this.search == element.barcode) {
           new_item.uom = element.posa_uom;
@@ -527,6 +549,11 @@ export default {
         } else if (this.search) {
           filtred_list = filtred_group_list.filter((item) => {
             let found = false;
+            let item_code_length = (this.pos_profile.item_code_length || 8)
+            let item_code = this.search.substr(2, item_code_length);
+            if (item.item_code == item_code) {
+              return true;
+            }
             for (let element of item.item_barcode) {
               if (element.barcode == this.search) {
                 found = true;

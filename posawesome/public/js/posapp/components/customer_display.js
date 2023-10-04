@@ -15,7 +15,6 @@ async function connect_customer_display() {
 }
 
 async function print_on_display(item_code, item_name, qty, subtotal) {
-    console.log(qty);
     if (!("serial" in navigator) || !cd_port) return;
     
     writer = cd_textEncoder.writable.getWriter();

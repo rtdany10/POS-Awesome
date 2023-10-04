@@ -832,7 +832,11 @@ export default {
       });
       sum -= flt(this.discount_amount);
       sum += flt(this.delivery_charges_rate);
-      return flt(sum).toFixed(this.currency_precision);
+      let amount = flt(sum).toFixed(this.currency_precision);
+      if (this.items.length) {
+        evntBus.$emit('print_item_on_display', this.items[this.items.length - 1], this.total_qty, amount);
+      }
+      return amount;
     },
     total_items_discount_amount() {
       let sum = 0;

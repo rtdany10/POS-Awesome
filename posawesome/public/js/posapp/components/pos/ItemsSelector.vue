@@ -411,6 +411,9 @@ export default {
       if (this.flags.batch_no) {
         new_item.to_set_batch_no = this.flags.batch_no;
       }
+      if (new_item.item_code == this.search) {
+        match = true;
+      }
       if (match) {
         this.add_item(new_item);
         this.search = null;

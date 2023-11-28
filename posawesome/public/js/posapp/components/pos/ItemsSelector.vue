@@ -355,7 +355,7 @@ export default {
       let match = false;
       if (!this.first_search && this.retry_enter_event < 2) {
         this.retry_enter_event += 1;
-        setTimeout(this.enter_event, 400);
+        setTimeout(this.enter_event, 275);
         return;
       }
       this.retry_enter_event = 0;

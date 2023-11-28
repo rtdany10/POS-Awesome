@@ -202,6 +202,7 @@ export default {
     new_line: false,
     qty: 1,
     barcode_search_type: 'AUTO',
+    retry_enter_event: 0,
   }),
 
   watch: {
@@ -352,16 +353,22 @@ export default {
     },
     enter_event() {
       let match = false;
+      if (!this.first_search && this.retry_enter_event < 2) {
+        this.retry_enter_event += 1;
+        setTimeout(this.enter_event, 400);
+        return;
+      }
+      this.retry_enter_event = 0;
       if (!this.filtred_items.length || !this.first_search) {
         return;
       }
       // const qty = this.get_item_qty(this.first_search);
       const new_item = { ...this.filtred_items[0] };
       // new_item.qty = flt(qty);
-      let item_code_length = (this.pos_profile.item_code_length || 8)
+      let item_code_length = (this.pos_profile.item_code_length || 5)
       if (this.search.length >= item_code_length && this.barcode_search_type != "OTHER") {
         let item_code = this.search.substr(2, item_code_length);
-        new_item.qty = this.search.substr((2 + item_code_length), 5)/1000;
+        new_item.qty = this.search.substr((2 + item_code_length), 6)/10000;
         new_item.uom = new_item.stock_uom;
         if (new_item.item_code == item_code) {
           match = true;
@@ -549,7 +556,7 @@ export default {
         } else if (this.search) {
           filtred_list = filtred_group_list.filter((item) => {
             let found = false;
-            let item_code_length = (this.pos_profile.item_code_length || 8)
+            let item_code_length = (this.pos_profile.item_code_length || 5)
             let item_code = this.search.substr(2, item_code_length);
             if (item.item_code == item_code) {
               return true;

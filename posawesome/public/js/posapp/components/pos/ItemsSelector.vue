@@ -367,7 +367,7 @@ export default {
       // new_item.qty = flt(qty);
       let item_code_length = (this.pos_profile.item_code_length || 5)
       if (this.search.length >= item_code_length && this.barcode_search_type != "OTHER") {
-        let item_code = this.search.substr(2, item_code_length);
+        let item_code = parseInt(this.search.substr(2, item_code_length));
         if (new_item.item_code == item_code) {
           new_item.qty = this.search.substr((2 + item_code_length), 6)/10000;
           new_item.uom = new_item.stock_uom;
@@ -560,7 +560,7 @@ export default {
           filtred_list = filtred_group_list.filter((item) => {
             let found = false;
             let item_code_length = (this.pos_profile.item_code_length || 5)
-            let item_code = this.search.substr(2, item_code_length);
+            let item_code = parseInt(this.search.substr(2, item_code_length));
             if (item.item_code == item_code) {
               return true;
             }

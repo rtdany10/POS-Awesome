@@ -369,7 +369,7 @@ export default {
       if (this.search.length >= item_code_length && this.barcode_search_type != "OTHER") {
         let item_code = parseInt(this.search.substr(2, item_code_length));
         if (new_item.item_code == item_code) {
-          new_item.qty = this.search.substr((2 + item_code_length), 5)/10000;
+          new_item.qty = this.search.substr((2 + item_code_length), 5)/1000;
           new_item.uom = new_item.stock_uom;
           match = true;
         }

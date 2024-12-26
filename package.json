@@ -1,6 +1,19 @@
 {
+  "name": "posawesome",
+  "scripts": {
+    "build": "node cesbuild",
+    "production": "node cesbuild --production"
+  },
   "dependencies": {
+    "fast-glob": "^3.2.5",
+    "esbuild": "^0.14.29",
     "lodash": "^4.17.21",
-    "vuetify": "^2.6.10"
+    "vuetify": "2.6.10",
+    "vue":"2.6.14",
+    "esbuild-vue": "^1.2.1",
+    "yargs": "^17.5.1",
+    "@frappe/esbuild-plugin-postcss2": "^0.1.3",
+    "vue-template-compiler": "2.6.14",
+    "rtlcss": "^3.2.1"
   }
 }

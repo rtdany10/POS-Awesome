@@ -1,3 +1,5 @@
+import Vue from './vue.js';
+import Vuetify from './vuetify.js';
 import Home from './Home.vue';
 
 frappe.provide('frappe.PosApp');

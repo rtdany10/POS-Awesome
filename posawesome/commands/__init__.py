@@ -87,4 +87,4 @@ def build(
 			print("Compiling translations for", app)
 			compile_translations(app, force=force)
 
-commands = [build]
+# commands = [build]

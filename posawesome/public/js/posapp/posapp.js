@@ -1,9 +1,11 @@
-import Vue from './vue.js';
+import Vue2 from './vue2.js';
 import Vuetify from './vuetify.js';
 import Home from './Home.vue';
 
-frappe.provide('frappe.PosApp');
+Vue2.prototype.__ = window.__ || ((text) => text);
+Vue2.prototype.frappe = window.frappe;
 
+frappe.provide('frappe.PosApp');
 
 frappe.PosApp.posapp = class {
     constructor({ parent }) {
@@ -14,7 +16,7 @@ frappe.PosApp.posapp = class {
     }
     make_body () {
         this.$el = this.$parent.find('.main-section');
-        this.vue = new Vue({
+        this.vue = new Vue2({
             vuetify: new Vuetify(
                 {
                     rtl: frappe.utils.is_rtl(),

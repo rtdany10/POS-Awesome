@@ -4,6 +4,7 @@ const fs = require("fs");
 const glob = require("fast-glob");
 const esbuild = require("esbuild");
 const vue = require("esbuild-vue");
+const vue_style_plugin = require("./frappe-vue-style");
 const yargs = require("yargs");
 const cliui = require("cliui")();
 const chalk = require("chalk");
@@ -16,20 +17,15 @@ const build_cleanup_plugin = require("./build-cleanup");
 
 const {
     app_list,
-    bench_path,
     assets_path,
-    sites_path,
     apps_path,
-    bundle_map,
+    sites_path,
     get_public_path,
-    delete_file,
-    run_serially,
-    get_cli_arg,
     log,
     log_warn,
     log_error,
+    bench_path,
     get_redis_subscriber,
-    get_cloned_apps,
 } = require("./utils");
 
 const argv = yargs
@@ -63,6 +59,16 @@ const argv = yargs
         type: "boolean",
         description: "Run build command for apps",
     })
+    .option("save-metafiles", {
+        type: "boolean",
+        description:
+            "Saves esbuild metafiles for built assets. Useful for analyzing bundle size. More info: https://esbuild.github.io/api/#metafile",
+    })
+    .option("using-cached", {
+        type: "boolean",
+        description:
+            "Skips build and uses cached build artifacts to update assets.json (used by Bench)",
+    })
     .example("node esbuild --apps frappe,erpnext", "Run build only for frappe and erpnext")
     .example(
         "node esbuild --files frappe/website.bundle.js,frappe/desk.bundle.js",
@@ -71,7 +77,7 @@ const argv = yargs
     .version(false).argv;
 
 const APPS = (!argv.apps ? app_list : argv.apps.split(",")).filter(
-    (app) => !(argv.skip_frappe && app == "frappe")
+    (app) => !(argv.skip_frappe && app == "posawesome")
 );
 const FILES_TO_BUILD = argv.files ? argv.files.split(",") : [];
 const WATCH_MODE = Boolean(argv.watch);
@@ -132,6 +138,55 @@ async function execute() {
     RUN_BUILD_COMMAND && run_build_command_for_apps(APPS);
     if (!WATCH_MODE) {
         process.exit(0);
+    }
+}
+
+async function update_assets_json_from_built_assets(apps) {
+    const assets = await get_assets_json_path_and_obj(false);
+    const assets_rtl = await get_assets_json_path_and_obj(true);
+
+    for (const app of apps) {
+        await update_assets_obj(app, assets.obj, assets_rtl.obj);
+    }
+
+    for (const { obj, path } of [assets, assets_rtl]) {
+        const data = JSON.stringify(obj, null, 4);
+        await fs.promises.writeFile(path, data);
+    }
+}
+
+async function update_assets_obj(app, assets, assets_rtl) {
+    const app_path = path.join(apps_path, app, app);
+    const dist_path = path.join(app_path, "public", "dist");
+    const files = await glob("**/*.bundle.*.{js,css}", { cwd: dist_path });
+    const assets_dist = path.join("assets", app, "dist");
+    const prefix = path.join("/", assets_dist);
+
+    // eg: "js/marketplace.bundle.6SCSPSGQ.js"
+    for (const file of files) {
+        const source_path = path.join(dist_path, file);
+        const dest_path = path.join(sites_path, assets_dist, file);
+
+        // Copy asset file from app/public to sites/assets
+        if (!fs.existsSync(dest_path)) {
+            const dest_dir = path.dirname(dest_path);
+            fs.mkdirSync(dest_dir, { recursive: true });
+            fs.copyFileSync(source_path, dest_path);
+        }
+
+        // eg: [ "marketplace", "bundle", "6SCSPSGQ", "js" ]
+        const parts = path.basename(file).split(".");
+
+        // eg: "marketplace.bundle.js"
+        const key = [...parts.slice(0, -2), parts.at(-1)].join(".");
+
+        // eg: "js/marketplace.bundle.6SCSPSGQ.js"
+        const value = path.join(prefix, file);
+        if (file.includes("-rtl")) {
+            assets_rtl[`rtl_${key}`] = value;
+        } else {
+            assets[key] = value;
+        }
     }
 }
 
@@ -232,7 +287,7 @@ function get_files_to_build(files) {
 }
 
 function build_files({ files, outdir }) {
-    let build_plugins = [html_plugin, build_cleanup_plugin, vue()];
+    let build_plugins = [vue(), html_plugin, build_cleanup_plugin, vue_style_plugin];
     return esbuild.build(get_build_options(files, outdir, build_plugins));
 }
 
@@ -268,6 +323,8 @@ function get_build_options(files, outdir, plugins) {
         nodePaths: NODE_PATHS,
         define: {
             "process.env.NODE_ENV": JSON.stringify(PRODUCTION ? "production" : "development"),
+            __VUE_OPTIONS_API__: JSON.stringify(true),
+            __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
         },
         plugins: plugins,
         watch: get_watch_config(),
@@ -395,20 +452,20 @@ async function write_assets_json(metafile) {
         }
     }
 
-    let assets_json_path = path.resolve(assets_path, `assets${rtl ? "-rtl" : ""}.json`);
-    let assets_json;
-    try {
-        assets_json = await fs.promises.readFile(assets_json_path, "utf-8");
-    } catch (error) {
-        assets_json = "{}";
-    }
-    assets_json = JSON.parse(assets_json);
+    let { obj: assets_json, path: assets_json_path } = await get_assets_json_path_and_obj(rtl);
     // update with new values
     let new_assets_json = Object.assign({}, assets_json, out);
     curr_assets_json = new_assets_json;
 
     await fs.promises.writeFile(assets_json_path, JSON.stringify(new_assets_json, null, 4));
     await update_assets_json_in_cache();
+    if (argv["save-metafiles"]) {
+        // use current timestamp in readable formate as a suffix for filename
+        let current_timestamp = new Date().getTime();
+        const metafile_name = `meta-${current_timestamp}.json`;
+        await fs.promises.writeFile(`${metafile_name}`, JSON.stringify(metafile));
+        log(`Saved metafile as ${metafile_name}`);
+    }
     return {
         new_assets_json,
         prev_assets_json,
@@ -429,6 +486,19 @@ async function update_assets_json_in_cache() {
     });
 }
 
+async function get_assets_json_path_and_obj(is_rtl) {
+    const file_name = is_rtl ? "assets-rtl.json" : "assets.json";
+    const assets_json_path = path.resolve(assets_path, file_name);
+    let assets_json;
+    try {
+        assets_json = await fs.promises.readFile(assets_json_path, "utf-8");
+    } catch (error) {
+        assets_json = "{}";
+    }
+    assets_json = JSON.parse(assets_json);
+    return { obj: assets_json, path: assets_json_path };
+}
+
 function run_build_command_for_apps(apps) {
     let cwd = process.cwd();
     let { execSync } = require("child_process");
@@ -438,14 +508,27 @@ function run_build_command_for_apps(apps) {
 
         let root_app_path = path.resolve(apps_path, app);
         let package_json = path.resolve(root_app_path, "package.json");
-        if (fs.existsSync(package_json)) {
-            let { scripts } = require(package_json);
-            if (scripts && scripts.build) {
-                log("\nRunning build command for", chalk.bold(app));
-                process.chdir(root_app_path);
-                execSync("yarn build", { encoding: "utf8", stdio: "inherit" });
-            }
+        let node_modules = path.resolve(root_app_path, "node_modules");
+
+        if (!fs.existsSync(package_json)) {
+            continue;
         }
+
+        let { scripts } = require(package_json);
+        if (!scripts?.build) {
+            continue;
+        }
+
+        process.chdir(root_app_path);
+        if (!fs.existsSync(node_modules)) {
+            log(
+                `\nInstalling dependencies for ${chalk.bold(app)} (because node_modules not found)`
+            );
+            execSync("yarn install", { encoding: "utf8", stdio: "inherit" });
+        }
+
+        log("\nRunning build command for", chalk.bold(app));
+        execSync("yarn build", { encoding: "utf8", stdio: "inherit" });
     }
 
     process.chdir(cwd);
@@ -453,10 +536,12 @@ function run_build_command_for_apps(apps) {
 
 async function notify_redis({ error, success, changed_files }) {
     // notify redis which in turns tells socketio to publish this to browser
-    let subscriber = get_redis_subscriber("redis_socketio");
-    subscriber.on("error", (_) => {
-        log_warn("Cannot connect to redis_socketio for browser events");
-    });
+    let subscriber = get_redis_subscriber("redis_queue");
+    try {
+        await subscriber.connect();
+    } catch (e) {
+        log_warn("Cannot connect to redis_queue for browser events");
+    }
 
     let payload = null;
     if (error) {
@@ -479,7 +564,7 @@ async function notify_redis({ error, success, changed_files }) {
         };
     }
 
-    subscriber.publish(
+    await subscriber.publish(
         "events",
         JSON.stringify({
             event: "build_event",
@@ -488,21 +573,20 @@ async function notify_redis({ error, success, changed_files }) {
     );
 }
 
-function open_in_editor() {
-    let subscriber = get_redis_subscriber("redis_socketio");
-    subscriber.on("error", (_) => {
-        log_warn("Cannot connect to redis_socketio for open_in_editor events");
+async function open_in_editor() {
+    let subscriber = get_redis_subscriber("redis_queue");
+    try {
+        await subscriber.connect();
+    } catch (e) {
+        log_warn("Cannot connect to redis_queue for open_in_editor events");
+    }
+    subscriber.subscribe("open_in_editor", (file) => {
+        file = JSON.parse(file);
+        let file_path = path.resolve(file.file);
+        log("Opening file in editor:", file_path);
+        let launch = require("launch-editor");
+        launch(`${file_path}:${file.line}:${file.column}`);
     });
-    subscriber.on("message", (event, file) => {
-        if (event === "open_in_editor") {
-            file = JSON.parse(file);
-            let file_path = path.resolve(file.file);
-            log("Opening file in editor:", file_path);
-            let launch = require("launch-editor");
-            launch(`${file_path}:${file.line}:${file.column}`);
-        }
-    });
-    subscriber.subscribe("open_in_editor");
 }
 
 function get_rebuilt_assets(prev_assets, new_assets) {

@@ -56,9 +56,9 @@
                       ></v-card-text>
                     </v-img>
                     <v-card-text class="text--primary pa-1">
-                      <div class="text-caption primary--text accent-3">
+                      <!-- <div class="text-caption primary--text accent-3">
                         {{ item.rate || 0 }} {{ item.currency || '' }}
-                      </div>
+                      </div> -->
                     </v-card-text>
                   </v-card>
                 </v-col>

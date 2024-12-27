@@ -157,12 +157,12 @@
             <v-btn small value="card">{{ __('Card') }}</v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="4" class="mt-2">
+        <v-col cols="4" class="mt-2 pr-1">
           <v-btn small block color="primary" text @click="show_coupons">
             {{ couponsCount }} {{ __('Coupons') }}
           </v-btn>
         </v-col>
-        <v-col cols="5" class="mt-2">
+        <v-col cols="5" class="mt-2 pl-1">
           <v-btn small block color="primary" text @click="show_offers">
             {{ offersCount }} {{ __('Offers') }} : {{ appliedOffersCount }} {{ __('Applied') }}
           </v-btn>
@@ -224,10 +224,20 @@ export default {
 
   methods: {
     show_offers() {
-      evntBus.$emit('show_offers', 'true');
+      // evntBus.$emit('show_offers', 'true');
+      evntBus.$emit("show_mesage", {
+        text: `Offer is currently disabled`,
+        color: "error",
+      });
+      frappe.utils.play_sound("error");
     },
     show_coupons() {
-      evntBus.$emit('show_coupons', 'true');
+      // evntBus.$emit('show_coupons', 'true');
+      evntBus.$emit("show_mesage", {
+        text: `Coupon is currently disabled`,
+        color: "error",
+      });
+      frappe.utils.play_sound("error");
     },
     get_items() {
       if (!this.pos_profile) {

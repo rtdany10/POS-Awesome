@@ -34,7 +34,6 @@
                   hide-default-footer
                 >
                   <template v-slot:item.amount="{ item }">
-                    {{ (item.currency) }}
                     <v-text-field
                       v-model="item.amount"
                       :rules="[max25chars]"

@@ -1348,22 +1348,17 @@ def search_invoices_for_return(invoice_name, company):
             "docstatus": 1,
             "is_return": 0,
         },
-        fields=["name"],
+        fields=["name as inv_id", "customer", "posting_date", "grand_total"],
         limit_page_length=0,
         order_by="customer",
     )
-    data = []
-    is_returned = frappe.get_all(
-        "Sales Invoice",
-        filters={"return_against": invoice_name, "docstatus": 1},
-        fields=["name"],
-        order_by="customer",
-    )
-    if len(is_returned):
-        return data
-    for invoice in invoices_list:
-        data.append(frappe.get_doc("Sales Invoice", invoice["name"]))
-    return data
+
+    return invoices_list
+
+
+@frappe.whitelist()
+def get_return_invoice_doc(invoice_name):
+    return frappe.get_doc("Sales Invoice", invoice_name)
 
 
 def get_version():

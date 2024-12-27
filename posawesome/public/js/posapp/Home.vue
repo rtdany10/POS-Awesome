@@ -1,5 +1,5 @@
 <template>
-  <v-app class="container">
+  <v-app>
     <v-main>
       <Navbar @changePage="setPage($event)"></Navbar>
       <component v-bind:is="page" class="mx-4 md-4"></component>

@@ -9,7 +9,7 @@
 
 <script>
 import Navbar from './components/Navbar.vue';
-// import POS from './components/pos/Pos.vue';
+import POS from './components/pos/Pos.vue';
 // import Payments from './components/payments/Pay.vue';
 
 export default {
@@ -20,8 +20,7 @@ export default {
   },
   components: {
     Navbar,
-    NavBar3,
-    // POS,
+    POS,
     // Payments,
   },
   methods: {

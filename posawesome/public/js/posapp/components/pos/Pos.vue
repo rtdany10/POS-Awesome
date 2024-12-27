@@ -1,11 +1,11 @@
 <template>
   <div fluid class="mt-2">
-    <ClosingDialog></ClosingDialog>
+    <!-- <ClosingDialog></ClosingDialog>
     <Drafts></Drafts>
     <Returns></Returns>
     <NewAddress></NewAddress>
     <MpesaPayments></MpesaPayments>
-    <Variants></Variants>
+    <Variants></Variants> -->
     <OpeningDialog v-if="dialog" :dialog="dialog"></OpeningDialog>
     <v-row v-show="!dialog">
       <v-col
@@ -19,7 +19,7 @@
       >
         <ItemsSelector></ItemsSelector>
       </v-col>
-      <v-col
+      <!-- <v-col
         v-show="offers"
         xl="5"
         lg="5"
@@ -40,7 +40,7 @@
         class="pos pr-0"
       >
         <PosCoupons></PosCoupons>
-      </v-col>
+      </v-col> -->
       <v-col
         v-show="payment"
         xl="5"
@@ -66,14 +66,14 @@ import ItemsSelector from './ItemsSelector.vue';
 import Invoice from './Invoice.vue';
 import OpeningDialog from './OpeningDialog.vue';
 import Payments from './Payments.vue';
-import PosOffers from './PosOffers.vue';
-import PosCoupons from './PosCoupons.vue';
-import Drafts from './Drafts.vue';
-import ClosingDialog from './ClosingDialog.vue';
-import NewAddress from './NewAddress.vue';
-import Variants from './Variants.vue';
-import Returns from './Returns.vue';
-import MpesaPayments from './Mpesa-Payments.vue';
+// import PosOffers from './PosOffers.vue';
+// import PosCoupons from './PosCoupons.vue';
+// import Drafts from './Drafts.vue';
+// import ClosingDialog from './ClosingDialog.vue';
+// import NewAddress from './NewAddress.vue';
+// import Variants from './Variants.vue';
+// import Returns from './Returns.vue';
+// import MpesaPayments from './Mpesa-Payments.vue';
 
 export default {
   data: function () {
@@ -92,15 +92,15 @@ export default {
     Invoice,
     OpeningDialog,
     Payments,
-    Drafts,
-    ClosingDialog,
+    // Drafts,
+    // ClosingDialog,
 
-    Returns,
-    PosOffers,
-    PosCoupons,
-    NewAddress,
-    Variants,
-    MpesaPayments,
+    // Returns,
+    // PosOffers,
+    // PosCoupons,
+    // NewAddress,
+    // Variants,
+    // MpesaPayments,
   },
 
   methods: {

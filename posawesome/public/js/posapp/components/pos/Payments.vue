@@ -365,7 +365,6 @@
             >
               <template v-slot:item="data">
                 <template>
-                  <v-list-item-content>
                     <v-list-item-title
                       class="primary--text subtitle-1"
                       v-html="data.item.address_title"
@@ -393,7 +392,6 @@
                       v-if="data.item.address_type"
                       v-html="data.item.address_type"
                     ></v-list-item-subtitle>
-                  </v-list-item-content>
                 </template>
               </template>
             </v-autocomplete>
@@ -607,7 +605,6 @@
             >
               <template v-slot:item="data">
                 <template>
-                  <v-list-item-content>
                     <v-list-item-title
                       class="primary--text subtitle-1"
                       v-html="data.item.sales_person_name"
@@ -616,7 +613,6 @@
                       v-if="data.item.sales_person_name != data.item.name"
                       v-html="`ID: ${data.item.name}`"
                     ></v-list-item-subtitle>
-                  </v-list-item-content>
                 </template>
               </template>
             </v-autocomplete>
@@ -702,8 +698,15 @@
 <script>
 import { evntBus } from "../../bus";
 import format from "../../format";
+import { inject } from 'vue';
+
 export default {
   mixins: [format],
+  setup() {
+    const __ = inject('__');
+    const frappe = inject('frappe');
+    return { __, frappe };
+  },
   data: () => ({
     loading: false,
     pos_profile: "",
@@ -728,6 +731,7 @@ export default {
     pos_settings: "",
     customer_info: "",
     mpesa_modes: [],
+    readonly: false,
   }),
 
   methods: {
@@ -1400,6 +1404,11 @@ export default {
   },
   created() {
     document.addEventListener("keydown", this.shortPay.bind(this));
+    this.$nextTick(function () {
+      evntBus.$on('set_customer_readonly', (value) => {
+        this.readonly = value;
+      });
+    });
   },
   beforeDestroy() {
     evntBus.$off("send_invoice_doc_payment");

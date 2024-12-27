@@ -115,7 +115,7 @@
                 class="elevation-1"
                 :items-per-page="itemsPerPage"
                 hide-default-footer
-                @click:row="add_item"
+                @click:row="row_add_item"
               >
                 <template #item.rate="{ item }">
                   <span class="primary--text"
@@ -339,6 +339,9 @@ export default {
       }
 
       return items_headers;
+    },
+    row_add_item(click, row) {
+      this.add_item(row.item);
     },
     add_item(item) {
       item = { ...item };

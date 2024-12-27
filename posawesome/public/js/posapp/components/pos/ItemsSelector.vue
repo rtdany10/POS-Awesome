@@ -19,7 +19,7 @@
             autofocus
             outlined
             color="primary"
-            :label="frappe._('Search Items')"
+            :label="__('Search Items')"
             hint="Search by item code, serial number, batch no or barcode"
             background-color="white"
             hide-details
@@ -45,7 +45,7 @@
             dense
             outlined
             color="primary"
-            :label="frappe._('QTY')"
+            :label="__('QTY')"
             background-color="white"
             hide-details
             v-model.number="qty"
@@ -65,7 +65,7 @@
           ></v-checkbox>
         </v-col>
         <v-col cols="12" class="pt-0 mt-0">
-          <div fluid class="items" v-if="items_view == 'card'">
+          <div v-if="items_view == 'card'">
             <v-row dense class="overflow-y-auto" style="max-height: 67vh">
               <v-col
                 v-for="(item, idx) in filtred_items"
@@ -106,31 +106,27 @@
               </v-col>
             </v-row>
           </div>
-          <div fluid class="items" v-if="items_view == 'list'">
+          <div v-if="items_view == 'list'">
             <div class="my-0 py-0 overflow-y-auto" style="max-height: 65vh">
-              <template>
-                <v-data-table
-                  :headers="getItmesHeaders()"
-                  :items="filtred_items"
-                  item-key="item_code"
-                  class="elevation-1"
-                  :items-per-page="itemsPerPage"
-                  hide-default-footer
-                  @click:row="add_item"
-                >
-                  <template v-slot:item.rate="{ item }">
-                    <span class="primary--text"
-                      >{{ currencySymbol(item.currency) }}
-                      {{ formtCurrency(item.rate) }}</span
-                    >
-                  </template>
-                  <template v-slot:item.actual_qty="{ item }">
-                    <span class="golden--text">{{
-                      formtFloat(item.actual_qty)
-                    }}</span>
-                  </template>
-                </v-data-table>
-              </template>
+              <v-data-table
+                :headers="listItemHeaders()"
+                :items="filtred_items"
+                item-value="item_code"
+                class="elevation-1"
+                :items-per-page="itemsPerPage"
+                hide-default-footer
+                @click:row="add_item"
+              >
+                <template #item.rate="{ item }">
+                  <span class="primary--text"
+                    >{{ currencySymbol(item.currency) }}
+                    {{ formtCurrency(item.rate) }}</span
+                  >
+                </template>
+                <template #item.actual_qty="{ item }">
+                  <span class="golden--text">{{ formtFloat(item.actual_qty) }}</span>
+                </template>
+              </v-data-table>
             </div>
           </div>
         </v-col>
@@ -141,12 +137,12 @@
         <v-col cols="12">
           <v-select
             :items="items_group"
-            :label="frappe._('Items Group')"
+            :label="__('Items Group')"
             dense
             outlined
             hide-details
             v-model="item_group"
-            v-on:change="search_onchange"
+            @change="search_onchange"
           ></v-select>
         </v-col>
         <v-col cols="3" class="mt-1">
@@ -162,15 +158,14 @@
           </v-btn-toggle>
         </v-col>
         <v-col cols="4" class="mt-2">
-          <v-btn small block color="primary" text @click="show_coupons"
-            >{{ couponsCount }} {{ __('Coupons') }}</v-btn
-          >
+          <v-btn small block color="primary" text @click="show_coupons">
+            {{ couponsCount }} {{ __('Coupons') }}
+          </v-btn>
         </v-col>
         <v-col cols="5" class="mt-2">
-          <v-btn small block color="primary" text @click="show_offers"
-            >{{ offersCount }} {{ __('Offers') }} : {{ appliedOffersCount }}
-            {{ __('Applied') }}</v-btn
-          >
+          <v-btn small block color="primary" text @click="show_offers">
+            {{ offersCount }} {{ __('Offers') }} : {{ appliedOffersCount }} {{ __('Applied') }}
+          </v-btn>
         </v-col>
       </v-row>
     </v-card>
@@ -180,9 +175,15 @@
 <script>
 import { evntBus } from '../../bus';
 import format from '../../format';
-import _ from 'lodash';
+import debounce from 'lodash.debounce';
+import { inject } from 'vue';
+
 export default {
   mixins: [format],
+  setup() {
+    const __ = inject('__');
+    return { __ };
+  },
   data: () => ({
     pos_profile: '',
     flags: {},
@@ -315,23 +316,23 @@ export default {
         });
       }
     },
-    getItmesHeaders() {
+    listItemHeaders() {
       const items_headers = [
         {
-          text: __('Name'),
+          title: __('Name'),
           align: 'start',
           sortable: true,
           value: 'item_name',
         },
         {
-          text: __('Code'),
+          title: __('Code'),
           align: 'start',
           sortable: true,
           value: 'item_code',
         },
-        { text: __('Rate'), value: 'rate', align: 'start' },
-        { text: __('Available QTY'), value: 'actual_qty', align: 'start' },
-        { text: __('UOM'), value: 'stock_uom', align: 'start' },
+        { title: __('Rate'), value: 'rate', align: 'start', width: '100px' },
+        { title: __('Stock Qty'), value: 'actual_qty', align: 'start', width: '100px' },
+        { title: __('UOM'), value: 'stock_uom', align: 'start' },
       ];
       if (!this.pos_profile.posa_display_item_code) {
         items_headers.splice(1, 1);
@@ -633,7 +634,7 @@ export default {
       get() {
         return this.first_search;
       },
-      set: _.debounce(function (newValue) {
+      set: debounce(function (newValue) {
         this.first_search = newValue;
       }, 200),
     },

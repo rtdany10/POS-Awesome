@@ -97,7 +97,7 @@
             :label="frappe._('Delivery Charges Rate')"
             background-color="white"
             hide-details
-            :value="formtCurrency(delivery_charges_rate)"
+            :model-value="formtCurrency(delivery_charges_rate)"
             :prefix="currencySymbol(pos_profile.currency)"
             disabled
           ></v-text-field>
@@ -171,7 +171,7 @@
             {{ formtCurrency(flt(item.qty, float_precision) * flt(item.rate, currency_precision)) }}
           </template>
           <template #item.posa_is_offer="{ item }">
-            <v-checkbox :value="!!item.posa_is_offer || !!item.posa_is_replace" disabled />
+            <v-checkbox :model-value="!!item.posa_is_offer || !!item.posa_is_replace" disabled />
           </template>
 
           <template #expanded-row="{ columns, item }">
@@ -232,7 +232,7 @@
                     :label="frappe._('QTY')"
                     background-color="white"
                     hide-details
-                    :value="formtFloat(item.qty)"
+                    :model-value="formtFloat(item.qty)"
                     @change="[
                       setFormatedFloat(item, 'qty', null, false, $event),
                       calc_stock_qty(item, $event),
@@ -267,7 +267,7 @@
                     background-color="white"
                     hide-details
                     :prefix="currencySymbol(pos_profile.currency)"
-                    :value="formtCurrency(item.rate)"
+                    :model-value="formtCurrency(item.rate)"
                     @change="[
                       setFormatedCurrency(item, 'rate', null, false, $event),
                       calc_prices(item, $event),
@@ -286,7 +286,7 @@
                     :label="frappe._('Discount Percentage')"
                     background-color="white"
                     hide-details
-                    :value="formtFloat(item.discount_percentage)"
+                    :model-value="formtFloat(item.discount_percentage)"
                     @change="[
                       setFormatedCurrency(item, 'discount_percentage', null, true, $event),
                       calc_prices(item, $event),
@@ -306,7 +306,7 @@
                     :label="frappe._('Discount Amount')"
                     background-color="white"
                     hide-details
-                    :value="formtCurrency(item.discount_amount)"
+                    :model-value="formtCurrency(item.discount_amount)"
                     :rules="[isNumber]"
                     @change="[
                       setFormatedCurrency(item, 'discount_amount', null, true, $event),
@@ -326,7 +326,7 @@
                     :label="frappe._('Price list Rate')"
                     background-color="white"
                     hide-details
-                    :value="formtCurrency(item.price_list_rate)"
+                    :model-value="formtCurrency(item.price_list_rate)"
                     disabled
                     :prefix="currencySymbol(pos_profile.currency)"
                   />
@@ -340,7 +340,7 @@
                     :label="frappe._('Available QTY')"
                     background-color="white"
                     hide-details
-                    :value="formtFloat(item.actual_qty)"
+                    :model-value="formtFloat(item.actual_qty)"
                     disabled
                   />
                 </v-col>
@@ -366,7 +366,7 @@
                     :label="frappe._('Stock QTY')"
                     background-color="white"
                     hide-details
-                    :value="formtFloat(item.stock_qty)"
+                    :model-value="formtFloat(item.stock_qty)"
                     disabled
                   />
                 </v-col>
@@ -433,7 +433,7 @@
                     :label="frappe._('Batch No. Available QTY')"
                     background-color="white"
                     hide-details
-                    :value="formtFloat(item.actual_batch_qty)"
+                    :model-value="formtFloat(item.actual_batch_qty)"
                     disabled
                   />
                 </v-col>
@@ -479,7 +479,7 @@
           <v-row no-gutters class="pa-1 pt-9 pr-1">
             <v-col cols="6" class="pa-1">
               <v-text-field
-                :value="formtFloat(total_qty)"
+                :model-value="formtFloat(total_qty)"
                 :label="frappe._('Total Qty')"
                 outlined
                 dense
@@ -494,7 +494,7 @@
               class="pa-1"
             >
               <v-text-field
-                :value="formtCurrency(discount_amount)"
+                :model-value="formtCurrency(discount_amount)"
                 @change="
                   setFormatedCurrency(
                     discount_amount,
@@ -526,7 +526,7 @@
               class="pa-1"
             >
               <v-text-field
-                :value="formtFloat(additional_discount_percentage)"
+                :model-value="formtFloat(additional_discount_percentage)"
                 @change="
                   [
                     setFormatedFloat(
@@ -557,7 +557,7 @@
             </v-col>
             <v-col cols="6" class="pa-1 mt-2">
               <v-text-field
-                :value="formtCurrency(total_items_discount_amount)"
+                :model-value="formtCurrency(total_items_discount_amount)"
                 :prefix="currencySymbol(pos_profile.currency)"
                 :label="frappe._('Items Discounts')"
                 outlined
@@ -570,7 +570,7 @@
 
             <v-col cols="6" class="pa-1 mt-2">
               <v-text-field
-                :value="formtCurrency(subtotal)"
+                :model-value="formtCurrency(subtotal)"
                 :prefix="currencySymbol(pos_profile.currency)"
                 :label="frappe._('Total')"
                 outlined
@@ -1484,8 +1484,10 @@ export default {
       }
     },
 
-    calc_prices(item, value, $event) {
+    calc_prices(item, _value, $event) {
+      let value = event.target.value;
       if (event.target.id === "rate") {
+        item.rate = value;
         item.discount_percentage = 0;
         if (value < item.price_list_rate) {
           item.discount_amount = this.flt(
@@ -1499,6 +1501,7 @@ export default {
           item.discount_amount = 0;
         }
       } else if (event.target.id === "discount_amount") {
+        item.discount_amount = value;
         if (value < 0) {
           item.discount_amount = 0;
           item.discount_percentage = 0;
@@ -1507,6 +1510,7 @@ export default {
           item.discount_percentage = 0;
         }
       } else if (event.target.id === "discount_percentage") {
+        item.discount_percentage = value;
         if (value < 0) {
           item.discount_amount = 0;
           item.discount_percentage = 0;
@@ -1522,6 +1526,8 @@ export default {
           );
         }
       }
+      item.amount = this.flt(item.qty * item.rate, this.currency_precision);
+      console.log(item);
     },
 
     calc_item_price(item) {

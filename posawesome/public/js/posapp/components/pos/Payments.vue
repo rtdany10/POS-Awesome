@@ -20,7 +20,7 @@
               :label="frappe._('Paid Amount')"
               background-color="white"
               hide-details
-              :value="formtCurrency(total_payments)"
+              :model-value="formtCurrency(total_payments)"
               readonly
               :prefix="currencySymbol(invoice_doc.currency)"
               dense
@@ -33,7 +33,7 @@
               :label="frappe._(diff_lable)"
               background-color="white"
               hide-details
-              :value="formtCurrency(diff_payment)"
+              :model-value="formtCurrency(diff_payment)"
               readonly
               :prefix="currencySymbol(invoice_doc.currency)"
               dense
@@ -63,7 +63,7 @@
               :label="frappe._('Credit Change')"
               background-color="white"
               hide-details
-              :value="formtCurrency(credit_change)"
+              :model-value="formtCurrency(credit_change)"
               readonly
               :prefix="currencySymbol(invoice_doc.currency)"
               dense
@@ -86,7 +86,7 @@
                 :label="frappe._(payment.mode_of_payment)"
                 background-color="white"
                 hide-details
-                :value="formtCurrency(payment.amount)"
+                :model-value="formtCurrency(payment.amount)"
                 @change="
                   setFormatedCurrency(payment, 'amount', null, true, $event)
                 "
@@ -182,7 +182,7 @@
               :label="frappe._('You can redeem upto')"
               background-color="white"
               hide-details
-              :value="formtFloat(available_pioints_amount)"
+              :model-value="formtFloat(available_pioints_amount)"
               :prefix="currencySymbol(invoice_doc.currency)"
               disabled
             ></v-text-field>
@@ -220,7 +220,7 @@
               :label="frappe._('You can redeem credit upto')"
               background-color="white"
               hide-details
-              :value="formtCurrency(available_customer_credit)"
+              :model-value="formtCurrency(available_customer_credit)"
               :prefix="currencySymbol(invoice_doc.currency)"
               disabled
             ></v-text-field>
@@ -237,7 +237,7 @@
               :label="frappe._('Net Total')"
               background-color="white"
               hide-details
-              :value="formtCurrency(invoice_doc.net_total)"
+              :model-value="formtCurrency(invoice_doc.net_total)"
               disabled
               :prefix="currencySymbol(invoice_doc.currency)"
             ></v-text-field>
@@ -250,7 +250,7 @@
               :label="frappe._('Tax and Charges')"
               background-color="white"
               hide-details
-              :value="formtCurrency(invoice_doc.total_taxes_and_charges)"
+              :model-value="formtCurrency(invoice_doc.total_taxes_and_charges)"
               disabled
               :prefix="currencySymbol(invoice_doc.currency)"
             ></v-text-field>
@@ -263,7 +263,7 @@
               :label="frappe._('Total Amount')"
               background-color="white"
               hide-details
-              :value="formtCurrency(invoice_doc.total)"
+              :model-value="formtCurrency(invoice_doc.total)"
               disabled
               :prefix="currencySymbol(invoice_doc.currency)"
             ></v-text-field>
@@ -276,7 +276,7 @@
               :label="frappe._('Discount Amount')"
               background-color="white"
               hide-details
-              :value="formtCurrency(invoice_doc.discount_amount)"
+              :model-value="formtCurrency(invoice_doc.discount_amount)"
               disabled
               :prefix="currencySymbol(invoice_doc.currency)"
             ></v-text-field>
@@ -289,7 +289,7 @@
               :label="frappe._('Grand Total')"
               background-color="white"
               hide-details
-              :value="formtCurrency(invoice_doc.grand_total)"
+              :model-value="formtCurrency(invoice_doc.grand_total)"
               disabled
               :prefix="currencySymbol(invoice_doc.currency)"
             ></v-text-field>
@@ -302,7 +302,7 @@
               :label="frappe._('Rounded Total')"
               background-color="white"
               hide-details
-              :value="formtCurrency(invoice_doc.rounded_total)"
+              :model-value="formtCurrency(invoice_doc.rounded_total)"
               disabled
               :prefix="currencySymbol(invoice_doc.currency)"
             ></v-text-field>
@@ -408,7 +408,7 @@
               rows="2"
               :label="frappe._('Additional Notes')"
               v-model="invoice_doc.posa_notes"
-              :value="invoice_doc.posa_notes"
+              :model-value="invoice_doc.posa_notes"
             ></v-textarea>
           </v-col>
         </v-row>
@@ -563,7 +563,7 @@
                 :label="frappe._('Available Credit')"
                 background-color="white"
                 hide-details
-                :value="formtCurrency(row.total_credit)"
+                :model-value="formtCurrency(row.total_credit)"
                 disabled
                 :prefix="currencySymbol(invoice_doc.currency)"
               ></v-text-field>

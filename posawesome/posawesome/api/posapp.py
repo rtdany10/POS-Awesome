@@ -1000,14 +1000,12 @@ def get_draft_invoices(pos_opening_shift):
             "docstatus": 0,
             "posa_is_printed": 0,
         },
-        fields=["name"],
+        fields=["name", "customer", "grand_total", "posting_date", "posting_time", "customer_name"],
         limit_page_length=0,
         order_by="modified desc",
     )
-    data = []
-    for invoice in invoices_list:
-        data.append(frappe.get_cached_doc("Sales Invoice", invoice["name"]))
-    return data
+
+    return invoices_list
 
 
 @frappe.whitelist()
@@ -1357,7 +1355,7 @@ def search_invoices_for_return(invoice_name, company):
 
 
 @frappe.whitelist()
-def get_return_invoice_doc(invoice_name):
+def get_invoice_doc(invoice_name):
     return frappe.get_doc("Sales Invoice", invoice_name)
 
 

@@ -122,7 +122,7 @@ export default {
       if (this.selected.length > 0) {
         let vm = this;
         frappe.call({
-          method: 'posawesome.posawesome.api.posapp.get_return_invoice_doc',
+          method: 'posawesome.posawesome.api.posapp.get_invoice_doc',
           args: {
             "invoice_name": this.selected[0]
           },

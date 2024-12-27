@@ -1,5 +1,5 @@
 <template>
-  <v-app class="container1">
+  <v-app class="container">
     <v-main>
       <Navbar @changePage="setPage($event)"></Navbar>
       <component v-bind:is="page" class="mx-4 md-4"></component>
@@ -9,8 +9,8 @@
 
 <script>
 import Navbar from './components/Navbar.vue';
-import POS from './components/pos/Pos.vue';
-import Payments from './components/payments/Pay.vue';
+// import POS from './components/pos/Pos.vue';
+// import Payments from './components/payments/Pay.vue';
 
 export default {
   data: function () {
@@ -20,8 +20,9 @@ export default {
   },
   components: {
     Navbar,
-    POS,
-    Payments,
+    NavBar3,
+    // POS,
+    // Payments,
   },
   methods: {
     setPage(page) {
@@ -31,6 +32,7 @@ export default {
       this.$nextTick(function () {
         $('.page-head').remove();
         $('.navbar.navbar-default.navbar-fixed-top').remove();
+        $('.body-sidebar-container').remove();
       });
     },
   },

@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "lodash": "^4.17.21",
-    "vuetify": "^2.6.10"
+    "@mdi/font": "^7.4.47",
+    "tiny-emitter": "^2.1.0",
+    "vuetify": "^3.7.6"
   }
 }

@@ -1,22 +1,10 @@
 <template>
   <nav>
     <v-app-bar app height="40" class="elevation-2">
-      <v-app-bar-nav-icon
-        @click.stop="drawer = !drawer"
-        class="grey--text"
-      ></v-app-bar-nav-icon>
-      <v-img
-        src="/assets/posawesome/js/posapp/components/pos/pos.png"
-        alt="POS Awesome"
-        max-width="32"
-        class="mr-2"
-        color="primary"
-      ></v-img>
-      <v-toolbar-title
-        @click="go_desk"
-        style="cursor: pointer"
-        class="text-uppercase primary--text"
-      >
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="grey--text"></v-app-bar-nav-icon>
+      <v-img src="/assets/posawesome/js/posapp/components/pos/pos.png" alt="POS Awesome" max-width="32" class="mr-2"
+        rounded="circle"></v-img>
+      <v-toolbar-title @click="go_desk" style="cursor: pointer" class="text-uppercase primary--text">
         <span class="font-weight-light">pos</span>
         <span>awesome</span>
       </v-toolbar-title>
@@ -27,105 +15,57 @@
       </v-btn>
       <div class="text-center">
         <v-menu offset-y>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark text v-bind="attrs" v-on="on"
-              >Menu</v-btn
-            >
+          <template v-slot:activator="{ props }">
+            <v-btn color="primary" dark text v-bind="props">Menu</v-btn>
           </template>
           <v-card class="mx-auto" max-width="300" tile>
-            <v-list dense>
-              <v-list-item-group v-model="menu_item" color="primary">
+            <v-list dense v-model="menu_item" color="primary">
                 <v-list-item
                   @click="close_shift_dialog"
                   v-if="!pos_profile.posa_hide_closing_shift && item == 0"
+                  prepend-icon="mdi-content-save-move-outline"
                 >
-                  <v-list-item-icon>
-                    <v-icon>mdi-content-save-move-outline</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
                     <v-list-item-title>{{
                       __('Close Shift')
                     }}</v-list-item-title>
-                  </v-list-item-content>
                 </v-list-item>
                 <v-list-item
                   @click="print_last_invoice"
-                  v-if="
-                    pos_profile.posa_allow_print_last_invoice &&
-                    this.last_invoice
-                  "
+                  v-if="pos_profile.posa_allow_print_last_invoice && this.last_invoice"
+                  prepend-icon="mdi-printer"
                 >
-                  <v-list-item-icon>
-                    <v-icon>mdi-printer</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
                     <v-list-item-title>{{
                       __('Print Last Invoice')
                     }}</v-list-item-title>
-                  </v-list-item-content>
                 </v-list-item>
                 <v-divider class="my-0"></v-divider>
-                <v-list-item @click="logOut">
-                  <v-list-item-icon>
-                    <v-icon>mdi-logout</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                <v-list-item @click="logOut" prepend-icon="mdi-logout">
                     <v-list-item-title>{{ __('Logout') }}</v-list-item-title>
-                  </v-list-item-content>
                 </v-list-item>
-                <v-list-item @click="go_about">
-                  <v-list-item-icon>
-                    <v-icon>mdi-information-outline</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                <v-list-item @click="go_about" prepend-icon="mdi-information-outline">
                     <v-list-item-title>{{ __('About') }}</v-list-item-title>
-                  </v-list-item-content>
                 </v-list-item>
-              </v-list-item-group>
             </v-list>
           </v-card>
         </v-menu>
       </div>
     </v-app-bar>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant.sync="mini"
-      app
-      class="primary margen-top"
-      width="170"
-    >
-      <v-list dark>
-        <v-list-item class="px-2">
-          <v-list-item-avatar>
-            <v-img :src="company_img"></v-img>
-          </v-list-item-avatar>
 
+    <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" app class="primary" width="220">
+      <v-list dark v-model="item" color="white">
+        <v-list-item class="px-2" :prepend-avatar="company_img">
           <v-list-item-title>{{ company }}</v-list-item-title>
-
-          <v-btn icon @click.stop="mini = !mini">
-            <v-icon>mdi-chevron-left</v-icon>
-          </v-btn>
         </v-list-item>
-        <!-- <MyPopup/> -->
-        <v-list-item-group v-model="item" color="white">
-          <v-list-item
-            v-for="item in items"
-            :key="item.text"
-            @click="changePage(item.text)"
-          >
-            <v-list-item-icon>
-              <v-icon v-text="item.icon"></v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.text"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
+        <v-list-item v-for="item in items" :key="item.text" @click="changePage(item.text)" :prepend-icon="item.icon">
+            <v-list-item-title v-text="item.text"></v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
     <v-snackbar v-model="snack" :timeout="5000" :color="snackColor" top right>
       {{ snackText }}
     </v-snackbar>
+
     <v-dialog v-model="freeze" persistent max-width="290">
       <v-card>
         <v-card-title class="text-h5">
@@ -139,8 +79,13 @@
 
 <script>
 import { evntBus } from '../bus';
+import { inject } from 'vue';
 
 export default {
+  setup() {
+    const __ = inject('__');
+    return { __ };
+  },
   // components: {MyPopup},
   data() {
     return {
@@ -268,7 +213,4 @@ export default {
 </script>
 
 <style scoped>
-.margen-top {
-  margin-top: 0px;
-}
 </style>

@@ -80,20 +80,19 @@
           >
             <v-col cols="6" v-if="!is_mpesa_c2b_payment(payment)">
               <v-text-field
-                dense
-                outlined
+                v-model="payment.amount"
+                density="compact"
+                variant="outlined"
                 color="primary"
                 :label="frappe._(payment.mode_of_payment)"
-                background-color="white"
+                bg-color="white"
                 hide-details
                 :model-value="formtCurrency(payment.amount)"
-                @change="
-                  setFormatedCurrency(payment, 'amount', null, true, $event)
-                "
+                @update:model-value="setFormatedCurrency(payment, 'amount', null, true, $event)"
                 :rules="[isNumber]"
                 :prefix="currencySymbol(invoice_doc.currency)"
                 @focus="set_rest_amount(payment.idx)"
-                :readonly="invoice_doc.is_return ? true : false"
+                :readonly="invoice_doc.is_return"
               ></v-text-field>
             </v-col>
             <v-col

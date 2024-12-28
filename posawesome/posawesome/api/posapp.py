@@ -196,7 +196,8 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
                 has_batch_no,
                 has_serial_no,
                 max_discount,
-                brand
+                brand,
+                plu_code
             FROM
                 `tabItem`
             WHERE
@@ -329,8 +330,8 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
             return _get_items(pos_profile, price_list, item_group, search_value)
     else:
         item_code_length = min(_pos_profile.get("item_code_length", 8), len(search_value))
-        item_code = search_value[:item_code_length]
-        if frappe.db.exists("Item", item_code):
+        plu_code = search_value[:item_code_length]
+        if item_code := frappe.db.get_value("Item", {"plu_code": plu_code}, "name"):
             return get_barcode_item_details(item_code, pos_profile, price_list)
         
         if barcode_search_type == "AUTO":
@@ -378,7 +379,8 @@ def get_barcode_item_details(item_code, pos_profile, price_list):
             has_batch_no,
             has_serial_no,
             max_discount,
-            brand
+            brand,
+            plu_code
         FROM
             `tabItem`
         WHERE

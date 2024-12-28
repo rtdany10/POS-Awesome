@@ -244,18 +244,19 @@
 
                 <v-col cols="4">
                   <v-select
-                    dense
-                    background-color="white"
+                    density="compact"
+                    :variant="'outlined'"
+                    :color="'white'"
                     :label="frappe._('UOM')"
                     v-model="item.uom"
                     :items="item.item_uoms"
-                    outlined
-                    item-text="uom"
+                    item-title="uom"
                     item-value="uom"
                     hide-details
-                    @change="calc_uom(item, $event)"
+                    @update:model-value="calc_uom(item, $event)"
                     :disabled="!!invoice_doc.is_return || !!item.posa_is_offer || !!item.posa_is_replace"
-                  />
+                  >
+                  </v-select>
                 </v-col>
 
                 <v-col cols="4">
@@ -455,16 +456,16 @@
                   <v-autocomplete
                     v-model="item.batch_no_selected"
                     :items="item.batch_no_data"
-                    item-text="batch_no"
-                    outlined
-                    dense
+                    item-title="batch_no"
+                    variant="outlined"
+                    density="compact"
                     chips
                     color="primary"
-                    small-chips
                     :label="frappe._('Batch No')"
                     multiple
-                    @change="set_batch_no(item)"
-                  />
+                    @update:model-value="set_batch_qty(item, $event)"
+                  >
+                  </v-autocomplete>
                 </v-col>
               </v-row>
             </td>
@@ -1527,7 +1528,6 @@ export default {
         }
       }
       item.amount = this.flt(item.qty * item.rate, this.currency_precision);
-      console.log(item);
     },
 
     calc_item_price(item) {
@@ -2592,7 +2592,7 @@ export default {
         let item = this.inv_items.find(
           (element) => element.posa_row_id == expanded_row.posa_row_id
         );
-        if (item) this.update_item_detail(item);
+        if (item) this.update_items_details(item);
       }
     },
     discount_percentage_offer_name() {

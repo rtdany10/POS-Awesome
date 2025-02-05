@@ -145,7 +145,8 @@ def get_items(pos_profile, price_list=None):
             itm.has_batch_no,
             itm.has_serial_no,
             itm.max_discount,
-            itm.brand
+            itm.brand,
+            bin.actual_qty
         FROM
             `tabItem` AS itm
         INNER JOIN

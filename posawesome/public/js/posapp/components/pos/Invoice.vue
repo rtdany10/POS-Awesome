@@ -240,7 +240,7 @@
                       hide-details
                       v-model.number="item.qty"
                       type="number"
-                      @change="calc_stock_qty(item, $event)"
+                      @change="calc_sotck_gty(item, $event)"
                       :disabled="!!item.posa_is_offer || !!item.posa_is_replace"
                     ></v-text-field>
                   </v-col>
@@ -869,7 +869,7 @@ export default {
       if (item.qty == 0) {
         this.remove_item(item);
       }
-      this.calc_stock_qty(item, item.qty);
+      this.calc_sotck_gty(item, item.qty);
       this.$forceUpdate();
       evntBus.$emit('print_item_on_display', item, this.total_qty, this.subtotal);
     },
@@ -878,7 +878,7 @@ export default {
       if (item.qty == 0) {
         this.remove_item(item);
       }
-      this.calc_stock_qty(item, item.qty);
+      this.calc_sotck_gty(item, item.qty);
       this.$forceUpdate();
       evntBus.$emit('print_item_on_display', item, this.total_qty, this.subtotal);
     },
@@ -926,14 +926,14 @@ export default {
         }
         if (!cur_item.has_batch_no) {
           cur_item.qty += item.qty || 1;
-          this.calc_stock_qty(cur_item, cur_item.qty);
+          this.calc_sotck_gty(cur_item, cur_item.qty);
         } else {
           if (
             cur_item.stock_qty < cur_item.actual_batch_qty ||
             !cur_item.batch_no
           ) {
             cur_item.qty += item.qty || 1;
-            this.calc_stock_qty(cur_item, cur_item.qty);
+            this.calc_sotck_gty(cur_item, cur_item.qty);
           } else {
             const new_item = this.get_new_item(cur_item);
             new_item.batch_no = '';
@@ -1228,16 +1228,6 @@ export default {
             value = false;
           }
         }
-        if(item.qty == 0){
-          evntBus.$emit('show_mesage', {
-              text: __(
-                `Quantity for item '{0}' cannot be Zero (0)`,
-                [item.item_name]
-              ),
-              color: 'error',
-            });
-            value = false;
-        }
         if (
           item.max_discount > 0 &&
           item.discount_percentage > item.max_discount
@@ -1462,7 +1452,7 @@ export default {
                 }
               }
             }
-            if (!item.batch_price) {
+            if (!item.btach_price) {
               if (
                 !item.is_free_item &&
                 !item.posa_is_offer &&
@@ -1607,13 +1597,13 @@ export default {
         item.discount_amount = 0;
         item.discount_percentage = 0;
       }
-      if (item.batch_price) {
-        item.price_list_rate = item.batch_price * new_uom.conversion_factor;
+      if (item.btach_price) {
+        item.price_list_rate = item.btach_price * new_uom.conversion_factor;
       }
       this.update_item_detail(item);
     },
 
-    calc_stock_qty(item, value) {
+    calc_sotck_gty(item, value) {
       item.stock_qty = item.conversion_factor * value;
     },
 
@@ -1625,9 +1615,13 @@ export default {
       });
       item.serial_no_selected_count = item.serial_no_selected.length;
       if (item.serial_no_selected_count != item.stock_qty) {
-        item.qty = item.serial_no_selected_count;
-        this.calc_stock_qty(item, item.qty);
-        this.$forceUpdate();
+        evntBus.$emit('show_mesage', {
+          text: __(`Selected Serial No QTY is {0} it should be {1}`, [
+            item.serial_no_selected_count,
+            item.stock_qty,
+          ]),
+          color: 'warning',
+        });
       }
     },
 
@@ -1637,12 +1631,12 @@ export default {
       );
       item.actual_batch_qty = batch_no.batch_qty;
       item.batch_no_expiry_date = batch_no.expiry_date;
-      if (batch_no.batch_price) {
-        item.batch_price = batch_no.batch_price;
-        item.price_list_rate = batch_no.batch_price;
-        item.rate = batch_no.batch_price;
+      if (batch_no.btach_price) {
+        item.btach_price = batch_no.btach_price;
+        item.price_list_rate = batch_no.btach_price;
+        item.rate = batch_no.btach_price;
       } else if (update) {
-        item.batch_price = null;
+        item.btach_price = null;
         this.update_item_detail(item);
       }
     },

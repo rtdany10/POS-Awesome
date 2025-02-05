@@ -299,24 +299,27 @@ export default {
       if (!this.filtred_items.length || !this.first_search) {
         return;
       }
-      const qty = this.get_item_qty(this.first_search);
-      const new_item = { ...this.filtred_items[0] };
-      new_item.qty = flt(qty);
-      new_item.item_barcode.forEach((element) => {
-        if (this.search == element.barcode) {
-          new_item.uom = element.posa_uom;
+      let me = this;
+      setTimeout(() => {
+        const qty = me.get_item_qty(me.first_search);
+        const new_item = { ...me.filtred_items[0] };
+        new_item.qty = flt(qty);
+        new_item.item_barcode.forEach((element) => {
+          if (me.search == element.barcode) {
+            new_item.uom = element.posa_uom;
+          }
+        });
+        if (me.flags.serial_no) {
+          new_item.to_set_serial_no = me.flags.serial_no;
         }
-      });
-      if (this.flags.serial_no) {
-        new_item.to_set_serial_no = this.flags.serial_no;
-      }
-      this.add_item(new_item);
-      this.search = null;
-      this.first_search = null;
-      this.debounce_search = null;
-      this.flags.serial_no = null;
-      this.qty = 1;
-      this.$refs.debounce_search.focus();
+        me.add_item(new_item);
+        me.search = null;
+        me.first_search = null;
+        me.debounce_search = null;
+        me.flags.serial_no = null;
+        me.qty = 1;
+        me.$refs.debounce_search.focus();
+      }, 400)
     },
     get_item_qty(first_search) {
       let scal_qty = Math.abs(this.qty);

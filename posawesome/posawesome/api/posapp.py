@@ -151,7 +151,7 @@ def get_items(pos_profile, price_list=None):
         INNER JOIN
             `tabBin` AS bin
         ON
-            bin.item_code = itm.name AND bin.warehouse = {1}
+            bin.item_code = itm.name AND bin.warehouse = %(warehouse)s
         WHERE
             itm.disabled = 0
             AND itm.is_sales_item = 1
@@ -159,11 +159,11 @@ def get_items(pos_profile, price_list=None):
             AND bin.actual_qty > 0
             {0}
         ORDER BY
-            name asc
+            itm.name asc
         """.format(
-            condition,
-            pos_profile.get("warehouse")
+            condition
         ),
+        {"warehouse": pos_profile.get("warehouse")},
         as_dict=1,
     )
 

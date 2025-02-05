@@ -296,11 +296,11 @@ export default {
       }
     },
     enter_event() {
-      if (!this.filtred_items.length || !this.first_search) {
-        return;
-      }
-      let me = this;
       setTimeout(() => {
+        if (!this.filtred_items.length || !this.first_search) {
+          return;
+        }
+        let me = this;
         const qty = me.get_item_qty(me.first_search);
         const new_item = { ...me.filtred_items[0] };
         new_item.qty = flt(qty);
@@ -319,7 +319,7 @@ export default {
         me.flags.serial_no = null;
         me.qty = 1;
         me.$refs.debounce_search.focus();
-      }, 400)
+      }, 200)
     },
     get_item_qty(first_search) {
       let scal_qty = Math.abs(this.qty);

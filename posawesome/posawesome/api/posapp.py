@@ -743,69 +743,7 @@ def delete_invoice(invoice):
 
 @frappe.whitelist()
 def get_items_details(pos_profile, items_data):
-    pos_profile = json.loads(pos_profile)
-    items_data = json.loads(items_data)
-    warehouse = pos_profile.get("warehouse")
-    result = []
-
-    if len(items_data) > 0:
-        for item in items_data:
-            item_code = item.get("item_code")
-            item_stock_qty = get_stock_availability(item_code, warehouse)
-            has_batch_no, has_serial_no = frappe.get_value(
-                "Item", item_code, ["has_batch_no", "has_serial_no"]
-            )
-
-            uoms = frappe.get_all(
-                "UOM Conversion Detail",
-                filters={"parent": item_code},
-                fields=["uom", "conversion_factor"],
-            )
-
-            serial_no_data = frappe.get_all(
-                "Serial No",
-                filters={"item_code": item_code, "status": "Active"},
-                fields=["name as serial_no"],
-            )
-
-            batch_no_data = []
-            from erpnext.stock.doctype.batch.batch import get_batch_qty
-
-            batch_list = get_batch_qty(warehouse=warehouse, item_code=item_code)
-
-            if batch_list:
-                for batch in batch_list:
-                    if batch.qty > 0 and batch.batch_no:
-                        batch_doc = frappe.get_doc("Batch", batch.batch_no)
-                        if (
-                            str(batch_doc.expiry_date) > str(nowdate())
-                            or batch_doc.expiry_date in ["", None]
-                        ) and batch_doc.disabled == 0:
-                            batch_no_data.append(
-                                {
-                                    "batch_no": batch.batch_no,
-                                    "batch_qty": batch.qty,
-                                    "expiry_date": batch_doc.expiry_date,
-                                    "btach_price": batch_doc.posa_btach_price,
-                                }
-                            )
-
-            row = {}
-            row.update(item)
-            row.update(
-                {
-                    "item_uoms": uoms or [],
-                    "serial_no_data": serial_no_data or [],
-                    "batch_no_data": batch_no_data or [],
-                    "actual_qty": item_stock_qty or 0,
-                    "has_batch_no": has_batch_no,
-                    "has_serial_no": has_serial_no,
-                }
-            )
-
-            result.append(row)
-
-    return result
+    return items_data
 
 
 @frappe.whitelist()

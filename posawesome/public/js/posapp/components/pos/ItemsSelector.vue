@@ -362,6 +362,7 @@ export default {
       this.$refs.debounce_search.focus();
     },
     update_items_details(items) {
+      return;
       const vm = this;
       frappe.call({
         method: 'posawesome.posawesome.api.posapp.get_items_details',

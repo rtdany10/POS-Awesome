@@ -1356,6 +1356,7 @@ export default {
     },
 
     update_items_details(items) {
+      return;
       if (!items.length > 0) {
         return;
       }

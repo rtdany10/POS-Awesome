@@ -743,7 +743,7 @@ def delete_invoice(invoice):
 
 @frappe.whitelist()
 def get_items_details(pos_profile, items_data):
-    return items_data
+    return json.loads(items_data)
 
 
 @frappe.whitelist()

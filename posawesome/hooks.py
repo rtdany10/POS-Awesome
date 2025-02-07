@@ -19,7 +19,8 @@ app_license = "GPLv3"
 # app_include_js = "/assets/posawesome/js/posawesome.js"
 app_include_js = [
     "/assets/posawesome/node_modules/vuetify/dist/vuetify.js",
-    "posawesome.bundle.js",
+    "/assets/js/toConsole.min.js",
+    "/assets/js/posapp.min.js",
 ]
 
 # include js, css files in header of web template

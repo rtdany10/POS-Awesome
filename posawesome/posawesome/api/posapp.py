@@ -204,7 +204,7 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
                 `tabItem Default` as itmdef
             ON
                 itemdef.parent = itm.name
-                AND itemdef.company = {company}
+                AND itemdef.company = "{company}"
             WHERE
                 itm.disabled = 0
                 AND itemdef.allow_sales = 1
@@ -393,7 +393,7 @@ def get_barcode_item_details(item_code, pos_profile, price_list):
             `tabItem Default` as itmdef
         ON
             itemdef.parent = itm.name
-            AND itemdef.company = {company}
+            AND itemdef.company = "{company}"
         WHERE
             itm.disabled = 0
             AND itemdef.allow_sales = 1

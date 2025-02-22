@@ -201,7 +201,7 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
             FROM
                 `tabItem` AS itm
             INNER JOIN
-                `tabItem Default` as itmdef
+                `tabItem Default` as itemdef
             ON
                 itemdef.parent = itm.name
                 AND itemdef.company = "{company}"
@@ -390,7 +390,7 @@ def get_barcode_item_details(item_code, pos_profile, price_list):
         FROM
             `tabItem` AS itm
         INNER JOIN
-            `tabItem Default` as itmdef
+            `tabItem Default` as itemdef
         ON
             itemdef.parent = itm.name
             AND itemdef.company = "{company}"

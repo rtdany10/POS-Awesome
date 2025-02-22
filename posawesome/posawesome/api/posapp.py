@@ -170,46 +170,52 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
                 item_code, serial_no, batch_no, barcode
             )
             if item_group:
-                condition += " AND item_group like '%{item_group}%'".format(
+                condition += " AND itm.item_group like '%{item_group}%'".format(
                     item_group=item_group
                 )
             limit = " LIMIT {search_limit}".format(search_limit=search_limit)
 
         if not posa_show_template_items:
-            condition += " AND has_variants = 0"
+            condition += " AND itm.has_variants = 0"
 
         result = []
 
         items_data = frappe.db.sql(
             """
             SELECT
-                name AS item_code,
-                item_name,
-                description,
-                stock_uom,
-                image,
-                is_stock_item,
-                has_variants,
-                variant_of,
-                item_group,
-                idx as idx,
-                has_batch_no,
-                has_serial_no,
-                max_discount,
-                brand,
-                plu_code
+                itm.name AS item_code,
+                itm.item_name,
+                itm.description,
+                itm.stock_uom,
+                itm.image,
+                itm.is_stock_item,
+                itm.has_variants,
+                itm.variant_of,
+                itm.item_group,
+                itm.idx as idx,
+                itm.has_batch_no,
+                itm.has_serial_no,
+                itm.max_discount,
+                itm.brand,
+                itm.plu_code
             FROM
-                `tabItem`
+                `tabItem` AS itm
+            INNER JOIN
+                `tabItem Default` as itmdef
+            ON
+                itemdef.parent = itm.name
+                AND itemdef.company = {company}
             WHERE
-                disabled = 0
-                    AND is_sales_item = 1
-                    AND is_fixed_asset = 0
-                    {condition}
+                itm.disabled = 0
+                AND itemdef.allow_sales = 1
+                AND itm.is_sales_item = 1
+                AND itm.is_fixed_asset = 0
+                {condition}
             ORDER BY
-                item_name asc
+                itm.item_name asc
             {limit}
-                """.format(
-                condition=condition, limit=limit
+            """.format(
+                condition=condition, limit=limit, company=pos_profile.get("company")
             ),
             as_dict=1,
         )
@@ -356,43 +362,49 @@ def get_barcode_item_details(item_code, pos_profile, price_list):
 
     limit = ""
 
-    condition = "AND item_code = '{item_code}'".format(item_code=item_code)
+    condition = "AND itm.item_code = '{item_code}'".format(item_code=item_code)
 
     if not posa_show_template_items:
-        condition += " AND has_variants = 0"
+        condition += " AND itm.has_variants = 0"
 
     result = []
 
     items_data = frappe.db.sql(
         """
         SELECT
-            name AS item_code,
-            item_name,
-            description,
-            stock_uom,
-            image,
-            is_stock_item,
-            has_variants,
-            variant_of,
-            item_group,
-            idx as idx,
-            has_batch_no,
-            has_serial_no,
-            max_discount,
-            brand,
-            plu_code
+            itm.name AS item_code,
+            itm.item_name,
+            itm.description,
+            itm.stock_uom,
+            itm.image,
+            itm.is_stock_item,
+            itm.has_variants,
+            itm.variant_of,
+            itm.item_group,
+            itm.idx as idx,
+            itm.has_batch_no,
+            itm.has_serial_no,
+            itm.max_discount,
+            itm.brand,
+            itm.plu_code
         FROM
-            `tabItem`
+            `tabItem` AS itm
+        INNER JOIN
+            `tabItem Default` as itmdef
+        ON
+            itemdef.parent = itm.name
+            AND itemdef.company = {company}
         WHERE
-            disabled = 0
-                AND is_sales_item = 1
-                AND is_fixed_asset = 0
-                {condition}
+            itm.disabled = 0
+            AND itemdef.allow_sales = 1
+            AND itm.is_sales_item = 1
+            AND itm.is_fixed_asset = 0
+            {condition}
         ORDER BY
-            item_name asc
+            itm.item_name asc
         {limit}
-            """.format(
-            condition=condition, limit=limit
+        """.format(
+            condition=condition, limit=limit, company=pos_profile.get("company")
         ),
         as_dict=1,
     )
@@ -511,7 +523,7 @@ def get_item_group_condition(pos_profile):
     cond = " and 1=1"
     item_groups = get_item_groups(pos_profile)
     if item_groups:
-        cond = " and item_group in (%s)" % (", ".join(["%s"] * len(item_groups)))
+        cond = " and itm.item_group in (%s)" % (", ".join(["%s"] * len(item_groups)))
 
     return cond % tuple(item_groups)
 
@@ -1891,7 +1903,7 @@ def search_serial_or_batch_or_barcode_number(search_value, search_serial_no):
 
 def get_seearch_items_conditions(item_code, serial_no, batch_no, barcode):
     if serial_no or batch_no or barcode:
-        return " and (name = {0} or plu_code = {0})".format(frappe.db.escape(item_code))
-    return """ and (name like {item_code} or item_name like {item_code} or plu_code like {item_code})""".format(
+        return " and (itm.name = {0} or itm.plu_code = {0})".format(frappe.db.escape(item_code))
+    return """ and (itm.name like {item_code} or itm.item_name like {item_code} or itm.plu_code like {item_code})""".format(
         item_code=frappe.db.escape("%" + item_code + "%")
     )

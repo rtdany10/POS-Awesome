@@ -232,11 +232,8 @@
                     :label="frappe._('QTY')"
                     background-color="white"
                     hide-details
-                    :model-value="formtFloat(item.qty)"
-                    @change="[
-                      setFormatedFloat(item, 'qty', null, false, $event),
-                      calc_stock_qty(item, $event),
-                    ]"
+                    v-model="item.qty"
+                    @change="calc_stock_qty(item, $event)"
                     :rules="[isNumber]"
                     :disabled="!!item.posa_is_offer || !!item.posa_is_replace"
                   />
@@ -495,16 +492,7 @@
               class="pa-1"
             >
               <v-text-field
-                :model-value="formtCurrency(discount_amount)"
-                @change="
-                  setFormatedCurrency(
-                    discount_amount,
-                    'discount_amount',
-                    null,
-                    false,
-                    $event
-                  )
-                "
+                v-model="discount_amount"
                 :rules="[isNumber]"
                 :label="frappe._('Additional Discount')"
                 ref="discount"

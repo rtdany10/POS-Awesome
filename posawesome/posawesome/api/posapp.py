@@ -791,9 +791,9 @@ def submit_invoice(invoice, data):
 
     payments = invoice_doc.payments
 
-    if frappe.get_value("POS Profile", invoice_doc.pos_profile, "posa_auto_set_batch"):
+    # if frappe.get_value("POS Profile", invoice_doc.pos_profile, "posa_auto_set_batch"):
         # set_batch_nos(invoice_doc, "warehouse", throw=True)
-        frappe.throw(_("Automated batch is not supported currently."))
+        # frappe.throw(_("Automated batch is not supported currently."))
     # set_batch_nos_for_bundels(invoice_doc, "warehouse", throw=True)
     invoice_doc.due_date = data.get("due_date")
     invoice_doc.flags.ignore_permissions = True

@@ -361,6 +361,7 @@ export default {
         if (!item.qty || item.qty === 1) {
           item.qty = Math.abs(this.qty);
         }
+        item.uom = item.sales_uom;
         evntBus.$emit('add_item', item);
         this.qty = 1;
       }

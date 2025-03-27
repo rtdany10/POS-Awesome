@@ -338,8 +338,9 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
     else:
         item_code_length = min(_pos_profile.get("item_code_length", 8), len(search_value))
         plu_code = search_value[:item_code_length]
-        if item_code := frappe.db.get_value("Item", {"plu_code": plu_code}, "name"):
-            return get_barcode_item_details(item_code, pos_profile, price_list)
+        if plu_code:
+            if item_code := frappe.db.get_value("Item", {"plu_code": plu_code}, "name"):
+                return get_barcode_item_details(item_code, pos_profile, price_list)
         
         if barcode_search_type == "AUTO":
             if _pos_profile.get("posa_use_server_cache"):

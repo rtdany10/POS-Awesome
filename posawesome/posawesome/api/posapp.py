@@ -250,7 +250,7 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
                 item_price = {}
                 if item_prices.get(item_code):
                     item_price = (
-                        item_prices.get(item_code).get(item.sales_uom)
+                        item_prices.get(item_code).get(item.sales_uom or item.stock_uom)
                         or item_prices.get(item_code).get("None")
                         or {}
                     )
@@ -441,7 +441,7 @@ def get_barcode_item_details(item_code, pos_profile, price_list):
             item_price = {}
             if item_prices.get(item_code):
                 item_price = (
-                    item_prices.get(item_code).get(item.sales_uom)
+                    item_prices.get(item_code).get(item.sales_uom or item.stock_uom)
                     or item_prices.get(item_code).get("None")
                     or {}
                 )

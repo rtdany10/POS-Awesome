@@ -3,6 +3,6 @@
     "@mdi/font": "^7.4.47",
     "lodash.debounce": "^4.0.8",
     "tiny-emitter": "^2.1.0",
-    "vuetify": "^3.7.6"
+    "vuetify": "3.7.19"
   }
 }

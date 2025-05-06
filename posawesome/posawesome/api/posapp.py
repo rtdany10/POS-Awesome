@@ -201,14 +201,8 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
                 itm.plu_code
             FROM
                 `tabItem` AS itm
-            INNER JOIN
-                `tabItem Default` as itemdef
-            ON
-                itemdef.parent = itm.name
-                AND itemdef.company = "{company}"
             WHERE
                 itm.disabled = 0
-                AND itemdef.allow_sales = 1
                 AND itm.is_sales_item = 1
                 AND itm.is_fixed_asset = 0
                 {condition}
@@ -392,14 +386,8 @@ def get_barcode_item_details(item_code, pos_profile, price_list):
             itm.plu_code
         FROM
             `tabItem` AS itm
-        INNER JOIN
-            `tabItem Default` as itemdef
-        ON
-            itemdef.parent = itm.name
-            AND itemdef.company = "{company}"
         WHERE
             itm.disabled = 0
-            AND itemdef.allow_sales = 1
             AND itm.is_sales_item = 1
             AND itm.is_fixed_asset = 0
             {condition}

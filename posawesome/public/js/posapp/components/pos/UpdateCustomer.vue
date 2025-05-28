@@ -346,7 +346,6 @@ export default {
   created: function () {
     evntBus.$on('open_update_customer', (data) => {
       this.customerDialog = true;
-      console.log("hi2");
       if (data) {
         this.customer_name = data.customer_name;
         this.customer_id = data.name;

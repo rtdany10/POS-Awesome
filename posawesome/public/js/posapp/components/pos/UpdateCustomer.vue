@@ -8,10 +8,10 @@
       <v-card>
         <v-card-title>
           <span v-if="customer_id" class="headline primary--text">{{
-            __('Update Customer')
+            ('Update Customer')
           }}</span>
           <span v-else class="headline primary--text">{{
-            __('Create Customer')
+            ('Create Customer')
           }}</span>
         </v-card-title>
         <v-card-text class="pa-0">
@@ -21,7 +21,7 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Customer Name') + ' *'"
+                  label="Customer Name*"
                   background-color="white"
                   hide-details
                   v-model="customer_name"
@@ -31,7 +31,7 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Tax ID')"
+                  label="Tax ID"
                   background-color="white"
                   hide-details
                   v-model="tax_id"
@@ -41,7 +41,7 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Mobile No')"
+                  label="Mobile No"
                   background-color="white"
                   hide-details
                   v-model="mobile_no"
@@ -51,7 +51,7 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Email Id')"
+                  label="Email Id"
                   background-color="white"
                   hide-details
                   v-model="email_id"
@@ -69,7 +69,7 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Referral Code')"
+                  label="Referral Code"
                   background-color="white"
                   hide-details
                   v-model="referral_code"
@@ -86,7 +86,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       v-model="birthday"
-                      :label="frappe._('Birthday')"
+                      :label="Birthday"
                       readonly
                       dense
                       clearable
@@ -113,11 +113,11 @@
                   dense
                   auto-select-first
                   color="primary"
-                  :label="frappe._('Customer Group') + ' *'"
+                  label="Customer Group*"
                   v-model="group"
                   :items="groups"
                   background-color="white"
-                  :no-data-text="__('Group not found')"
+                  no-data-text="Group not found"
                   hide-details
                   required
                 >
@@ -129,11 +129,11 @@
                   dense
                   auto-select-first
                   color="primary"
-                  :label="frappe._('Territory') + ' *'"
+                  label="Territory*"
                   v-model="territory"
                   :items="territorys"
                   background-color="white"
-                  :no-data-text="__('Territory not found')"
+                  no-data-text="Territory not found"
                   hide-details
                   required
                 >
@@ -142,7 +142,7 @@
               <v-col cols="6" v-if="loyalty_program">
                 <v-text-field
                   v-model="loyalty_program"
-                  :label="frappe._('Loyalty Program')"
+                  label="Loyalty Program"
                   dense
                   readonly
                   hide-details
@@ -151,7 +151,7 @@
               <v-col cols="6" v-if="loyalty_points">
                 <v-text-field
                   v-model="loyalty_points"
-                  :label="frappe._('Loyalty Points')"
+                  label="Loyalty Points"
                   dense
                   readonly
                   hide-details
@@ -163,10 +163,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="error" dark @click="close_dialog">{{
-            __('Close')
+            'Close'
           }}</v-btn>
           <v-btn color="success" dark @click="submit_dialog">{{
-            __('Submit')
+            'Submit'
           }}</v-btn>
         </v-card-actions>
       </v-card>
@@ -274,21 +274,21 @@ export default {
       // validate if all required fields are filled
       if (!this.customer_name) {
         evntBus.$emit('show_mesage', {
-          text: __('Customer name is required.'),
+          text: 'Customer name is required.',
           color: 'error',
         });
         return;
       }
       if (!this.group) {
         evntBus.$emit('show_mesage', {
-          text: __('Customer group is required.'),
+          text: 'Customer group is required.',
           color: 'error',
         });
         return;
       }
       if (!this.territory) {
         evntBus.$emit('show_mesage', {
-          text: __('Customer territory is required.'),
+          text: 'Customer territory is required.',
           color: 'error',
         });
         return;
@@ -316,9 +316,9 @@ export default {
           args: args,
           callback: (r) => {
             if (!r.exc && r.message.name) {
-              let text = __('Customer created successfully.');
+              let text = 'Customer created successfully.';
               if (vm.customer_id) {
-                text = __('Customer updated successfully.');
+                text = 'Customer updated successfully.';
               }
               evntBus.$emit('show_mesage', {
                 text: text,
@@ -333,7 +333,7 @@ export default {
             } else {
               frappe.utils.play_sound('error');
               evntBus.$emit('show_mesage', {
-                text: __('Customer creation failed.'),
+                text: 'Customer creation failed.',
                 color: 'error',
               });
             }
@@ -346,6 +346,7 @@ export default {
   created: function () {
     evntBus.$on('open_update_customer', (data) => {
       this.customerDialog = true;
+      console.log("hi2");
       if (data) {
         this.customer_name = data.customer_name;
         this.customer_id = data.name;

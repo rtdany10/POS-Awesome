@@ -54,13 +54,9 @@ export default {
 
   methods: {
     async get_customer_names() {
-      const vm = this;
-      if (this.customers.length > 0) {
-        return;
-      }
-      if (vm.pos_profile.posa_local_storage && localStorage.customer_storage) {
-        vm.customers = JSON.parse(localStorage.getItem('customer_storage'));
-        return;
+      if (this.pos_profile.posa_local_storage && localStorage.customer_storage) {
+        this.customers = JSON.parse(localStorage.getItem('customer_storage'));
+        if (this.customers) return;
       }
       let r = await frappe.call({
         method: 'posawesome.posawesome.api.posapp.get_customer_names',
@@ -70,9 +66,10 @@ export default {
       });
 
       if (r.message) {
-        vm.customers = r.message;
+        this.customers = r.message;
         console.info('loadCustomers');
-        if (vm.pos_profile.posa_local_storage) {
+        console.log(this.customers[0]);
+        if (this.pos_profile.posa_local_storage) {
           localStorage.setItem('customer_storage', '');
           localStorage.setItem(
             'customer_storage',

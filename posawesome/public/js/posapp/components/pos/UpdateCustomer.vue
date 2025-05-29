@@ -328,18 +328,16 @@ export default {
     },
   },
   created: function () {
-    evntBus.$on('open_update_customer', (data) => {
+    evntBus.$on('open_update_customer', async (data) => {
       if (!this.pos_profile) {
-        frappe
+        let r = await frappe
         .call('posawesome.posawesome.api.posapp.check_opening_shift', {
           user: frappe.session.user,
-        })
-        .then((r) => {
-          if (r.message) {
-            this.pos_profile = r.message.pos_profile;
-            console.info('LoadPosProfile');
-          }
         });
+        if (r.message) {
+          this.pos_profile = r.message.pos_profile;
+          console.info('LoadPosProfile');
+        }
       }
       this.customerDialog = true;
       if (data) {

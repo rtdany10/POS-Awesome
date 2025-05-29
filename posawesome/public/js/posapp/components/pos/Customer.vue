@@ -53,7 +53,7 @@ export default {
   },
 
   methods: {
-    get_customer_names() {
+    async get_customer_names() {
       const vm = this;
       if (this.customers.length > 0) {
         return;
@@ -62,25 +62,24 @@ export default {
         vm.customers = JSON.parse(localStorage.getItem('customer_storage'));
         return;
       }
-      frappe.call({
+      let r = await frappe.call({
         method: 'posawesome.posawesome.api.posapp.get_customer_names',
         args: {
           pos_profile: this.pos_profile.pos_profile,
         },
-        callback: function (r) {
-          if (r.message) {
-            vm.customers = r.message;
-            console.info('loadCustomers');
-            if (vm.pos_profile.posa_local_storage) {
-              localStorage.setItem('customer_storage', '');
-              localStorage.setItem(
-                'customer_storage',
-                JSON.stringify(r.message)
-              );
-            }
-          }
-        },
       });
+
+      if (r.message) {
+        vm.customers = r.message;
+        console.info('loadCustomers');
+        if (vm.pos_profile.posa_local_storage) {
+          localStorage.setItem('customer_storage', '');
+          localStorage.setItem(
+            'customer_storage',
+            JSON.stringify(r.message)
+          );
+        }
+      }
     },
     new_customer() {
       evntBus.$emit('open_update_customer', null);
@@ -142,9 +141,6 @@ export default {
     customer() {
       evntBus.$emit('update_customer', this.customer);
     },
-    customers() {
-      console.log(this.customers);
-    }
   },
 };
 </script>

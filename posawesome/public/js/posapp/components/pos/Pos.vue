@@ -71,7 +71,6 @@ import Payments from './Payments.vue';
 // import PosCoupons from './PosCoupons.vue';
 import Drafts from './Drafts.vue';
 import Orders from './Orders.vue';
-import Customer from './Customer.vue';
 import ClosingDialog from './ClosingDialog.vue';
 // import NewAddress from './NewAddress.vue';
 // import Variants from './Variants.vue';
@@ -99,7 +98,6 @@ export default {
     Orders,
     ClosingDialog,
     Returns,
-    Customer,
     // PosOffers,
     // PosCoupons,
     // NewAddress,

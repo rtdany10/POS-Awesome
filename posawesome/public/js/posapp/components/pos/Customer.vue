@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-autocomplete
+      :key="frappe.utils.get_random(6)"
       v-model="customer"
       :items="customers"
       item-title="customer_name"

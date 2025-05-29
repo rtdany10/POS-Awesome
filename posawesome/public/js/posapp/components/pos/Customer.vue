@@ -7,21 +7,25 @@
       item-value="name"
       label="Customer"
       color="primary"
-      dense
+      density="compact"
       clearable
-      outlined
-      background-color="white"
-      :no-data="__('Customer not found')"
-      :filter="customFilter"
+      variant="outlined"
+      class="bg-white"
+      :no-data-text="__('Customer not found')"
+      :custom-filter="customFilter"
       :disabled="readonly"
       hide-details
-      append-inner-icon="mdi-plus"
-      @click:append-inner="new_customer"
-      prepend-inner-icon="mdi-account-edit"
-      @click:prepend-inner="edit_customer"
-    />
+    >
+      <template #append-inner>
+        <v-icon @click.stop="new_customer" icon="mdi-plus" />
+      </template>
+      <template #prepend-inner>
+        <v-icon @click.stop="edit_customer" icon="mdi-account-edit" />
+      </template>
+    </v-autocomplete>
+
     <div class="mb-8">
-      <UpdateCustomer></UpdateCustomer>
+      <UpdateCustomer />
     </div>
   </div>
 </template>
@@ -92,7 +96,7 @@ export default {
       const textTwo = item.tax_id ? item.tax_id.toLowerCase() : '';
       const textThree = item.email_id ? item.email_id.toLowerCase() : '';
       const textFour = item.mobile_no ? item.mobile_no.toLowerCase() : '';
-      const textFifth = item.name.toLowerCase();
+      const textFifth = item.name ? item.name.toLowerCase() : '';
       const searchText = queryText.toLowerCase();
 
       return (

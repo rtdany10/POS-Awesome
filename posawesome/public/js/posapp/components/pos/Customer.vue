@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-autocomplete
-      :key="frappe.utils.get_random(6)"
       v-model="customer"
       :items="customers"
       item-title="customer_name"
@@ -16,12 +15,12 @@
       :disabled="readonly"
       hide-details
     >
-      <template #append-inner>
+      <!-- <template #append-inner>
         <v-icon @click.stop="new_customer" icon="mdi-plus" />
       </template>
       <template #prepend-inner>
         <v-icon @click.stop="edit_customer" icon="mdi-account-edit" />
-      </template>
+      </template> -->
     </v-autocomplete>
 
     <div class="mb-8">

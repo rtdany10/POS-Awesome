@@ -12,7 +12,6 @@
       variant="outlined"
       class="bg-white"
       :no-data-text="__('Customer not found')"
-      :custom-filter="customFilter"
       :disabled="readonly"
       hide-details
     >
@@ -143,6 +142,9 @@ export default {
     customer() {
       evntBus.$emit('update_customer', this.customer);
     },
+    customers() {
+      console.log(this.customers);
+    }
   },
 };
 </script>

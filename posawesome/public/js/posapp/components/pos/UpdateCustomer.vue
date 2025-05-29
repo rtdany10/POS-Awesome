@@ -2,172 +2,156 @@
   <v-row justify="center">
     <v-dialog
       v-model="customerDialog"
-      max-width="600px"
+      max-width="600"
       @click:outside="clear_customer"
     >
       <v-card>
         <v-card-title>
-          <span v-if="customer_id" class="headline primary--text">{{
-            ('Update Customer')
-          }}</span>
-          <span v-else class="headline primary--text">{{
-            ('Create Customer')
-          }}</span>
+          <span v-if="customer_id" class="text-h6 text-primary">
+            Update Customer
+          </span>
+          <span v-else class="text-h6 text-primary">
+            Create Customer
+          </span>
         </v-card-title>
         <v-card-text class="pa-0">
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  dense
+                  density="compact"
                   color="primary"
-                  label="Customer Name*"
-                  background-color="white"
-                  hide-details
+                  label="Customer Name"
                   v-model="customer_name"
-                ></v-text-field>
+                  hide-details
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  dense
+                  density="compact"
                   color="primary"
                   label="Tax ID"
-                  background-color="white"
-                  hide-details
                   v-model="tax_id"
-                ></v-text-field>
+                  hide-details
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  dense
+                  density="compact"
                   color="primary"
                   label="Mobile No"
-                  background-color="white"
-                  hide-details
                   v-model="mobile_no"
-                ></v-text-field>
+                  hide-details
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  dense
+                  density="compact"
                   color="primary"
                   label="Email Id"
-                  background-color="white"
-                  hide-details
                   v-model="email_id"
-                ></v-text-field>
+                  hide-details
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6">
                 <v-select
-                  dense
+                  density="compact"
                   label="Gender"
                   :items="genders"
                   v-model="gender"
-                ></v-select>
+                  hide-details
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  dense
+                  density="compact"
                   color="primary"
                   label="Referral Code"
-                  background-color="white"
-                  hide-details
                   v-model="referral_code"
-                ></v-text-field>
+                  hide-details
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6">
                 <v-menu
-                  ref="birthday_menu"
                   v-model="birthday_menu"
                   :close-on-content-click="false"
                   transition="scale-transition"
-                  dense
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ props }">
                     <v-text-field
                       v-model="birthday"
-                      :label="Birthday"
+                      label="Birthday"
                       readonly
-                      dense
+                      density="compact"
                       clearable
                       hide-details
-                      v-bind="attrs"
-                      v-on="on"
+                      v-bind="props"
                       color="primary"
-                    ></v-text-field>
+                      variant="outlined"
+                    />
                   </template>
                   <v-date-picker
                     v-model="birthday"
                     color="primary"
-                    no-title
-                    scrollable
-                    :max="frappe.datetime.now_date()"
-                    @input="birthday_menu = false"
-                  >
-                  </v-date-picker>
+                    @update:model-value="birthday_menu = false"
+                  />
                 </v-menu>
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
                   clearable
-                  dense
-                  auto-select-first
-                  color="primary"
-                  label="Customer Group*"
+                  density="compact"
+                  label="Customer Group"
                   v-model="group"
                   :items="groups"
-                  background-color="white"
-                  no-data-text="Group not found"
                   hide-details
-                  required
-                >
-                </v-autocomplete>
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
                   clearable
-                  dense
-                  auto-select-first
-                  color="primary"
-                  label="Territory*"
+                  density="compact"
+                  label="Territory"
                   v-model="territory"
                   :items="territorys"
-                  background-color="white"
-                  no-data-text="Territory not found"
                   hide-details
-                  required
-                >
-                </v-autocomplete>
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6" v-if="loyalty_program">
                 <v-text-field
                   v-model="loyalty_program"
                   label="Loyalty Program"
-                  dense
                   readonly
+                  density="compact"
                   hide-details
-                ></v-text-field>
+                  variant="outlined"
+                />
               </v-col>
               <v-col cols="6" v-if="loyalty_points">
                 <v-text-field
                   v-model="loyalty_points"
                   label="Loyalty Points"
-                  dense
                   readonly
+                  density="compact"
                   hide-details
-                ></v-text-field>
+                  variant="outlined"
+                />
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="error" dark @click="close_dialog">{{
-            'Close'
-          }}</v-btn>
-          <v-btn color="success" dark @click="submit_dialog">{{
-            'Submit'
-          }}</v-btn>
+          <v-spacer />
+          <v-btn color="error" @click="close_dialog">Close</v-btn>
+          <v-btn color="success" @click="submit_dialog">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

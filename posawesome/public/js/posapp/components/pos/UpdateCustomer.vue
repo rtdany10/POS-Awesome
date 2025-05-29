@@ -182,9 +182,6 @@ export default {
     loyalty_points: null,
     loyalty_program: null,
   }),
-  props: {
-    default_pos_profile: Object,
-  },
   watch: {},
   methods: {
     close_dialog() {
@@ -332,9 +329,6 @@ export default {
   },
   created: function () {
     evntBus.$on('open_update_customer', (data) => {
-      if (this.pos_profile) {
-        this.pos_profile = this.default_pos_profile;
-      }
       this.customerDialog = true;
       if (data) {
         this.customer_name = data.customer_name;

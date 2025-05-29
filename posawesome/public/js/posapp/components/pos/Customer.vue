@@ -21,8 +21,7 @@
       @click:prepend-inner="edit_customer"
     />
     <div class="mb-8">
-      <UpdateCustomer :default_pos_profile="pos_profile"></UpdateCustomer>
-
+      <UpdateCustomer></UpdateCustomer>
     </div>
   </div>
 </template>

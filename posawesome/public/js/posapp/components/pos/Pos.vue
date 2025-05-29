@@ -2,6 +2,7 @@
   <div fluid class="mt-2">
     <ClosingDialog></ClosingDialog>
     <Drafts></Drafts>
+    <Orders></Orders>
     <Returns></Returns>
     <!-- <NewAddress></NewAddress>
     <MpesaPayments></MpesaPayments>
@@ -69,6 +70,7 @@ import Payments from './Payments.vue';
 // import PosOffers from './PosOffers.vue';
 // import PosCoupons from './PosCoupons.vue';
 import Drafts from './Drafts.vue';
+import Orders from './Orders.vue';
 import ClosingDialog from './ClosingDialog.vue';
 // import NewAddress from './NewAddress.vue';
 // import Variants from './Variants.vue';
@@ -93,6 +95,7 @@ export default {
     OpeningDialog,
     Payments,
     Drafts,
+    Orders,
     ClosingDialog,
     Returns,
     // PosOffers,

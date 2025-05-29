@@ -665,10 +665,14 @@ def add_taxes_from_tax_template(item, parent_doc):
 @frappe.whitelist()
 def update_invoice(data):
     data = json.loads(data)
-    if data.get("name"):
+    existing_inv = data.get("name") and frappe.db.exists(
+        "Sales Invoice", data.get("name")
+    )
+    if existing_inv:
         invoice_doc = frappe.get_doc("Sales Invoice", data.get("name"))
         invoice_doc.update(data)
     else:
+        data.pop("name", None)
         invoice_doc = frappe.get_doc(data)
 
     invoice_doc.set_missing_values()
@@ -1011,6 +1015,22 @@ def get_draft_invoices(pos_opening_shift):
     )
 
     return invoices_list
+
+
+@frappe.whitelist()
+def get_open_orders(customer, company):
+    return frappe.get_list(
+        "Sales Order",
+        filters={
+            "customer": customer,
+            "company": company,
+            "docstatus": 1,
+            "per_billed": ["<", 100],
+        },
+        fields=["name", "customer", "grand_total", "transaction_date as posting_date", "customer_name"],
+        limit_page_length=0,
+        order_by="modified desc",
+    )
 
 
 @frappe.whitelist()
@@ -1362,6 +1382,17 @@ def search_invoices_for_return(invoice_name, company):
 @frappe.whitelist()
 def get_invoice_doc(invoice_name):
     return frappe.get_doc("Sales Invoice", invoice_name)
+
+
+@frappe.whitelist()
+def map_order_to_invoice(orders):
+    from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
+    target_doc = None
+    for order in json.loads(orders):
+        target_doc = make_sales_invoice(order, target_doc, True)
+
+    target_doc.name = f"{frappe.scrub(frappe.utils.get_datetime())}{frappe.generate_hash('', 5)}"
+    return target_doc
 
 
 def get_version():

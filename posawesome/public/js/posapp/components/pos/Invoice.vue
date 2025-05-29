@@ -573,6 +573,16 @@
         </v-col>
         <v-col cols="5">
           <v-row no-gutters class="pa-1 pt-2 pl-0">
+            <v-col class="pa-1">
+              <v-btn
+                block
+                class="pa-0"
+                color="primary"
+                @click="get_open_orders"
+                dark
+                >{{ __("Open Orders") }}</v-btn
+              >
+            </v-col>
             <v-col cols="6" class="pa-1">
               <v-btn
                 block
@@ -614,16 +624,6 @@
                 >{{ __("Save/New") }}</v-btn
               >
             </v-col>
-            <v-col class="pa-1">
-              <v-btn
-                block
-                class="pa-0"
-                color="success"
-                @click="show_payment"
-                dark
-                >{{ __("PAY") }}</v-btn
-              >
-            </v-col>
             <v-col
               v-if="pos_profile.posa_allow_print_draft_invoices"
               cols="6"
@@ -636,6 +636,16 @@
                 @click="print_draft_invoice"
                 dark
                 >{{ __("Print Draft") }}</v-btn
+              >
+            </v-col>
+            <v-col cols="12" class="pa-1">
+              <v-btn
+                block
+                class="pa-0"
+                color="success"
+                @click="show_payment"
+                dark
+                >{{ __("PAY") }}</v-btn
               >
             </v-col>
           </v-row>
@@ -1048,6 +1058,8 @@ export default {
           posa_notes: item.posa_notes,
           posa_delivery_date: item.posa_delivery_date,
           price_list_rate: item.price_list_rate,
+          sales_order: item.sales_order,
+          so_detail: item.so_detail
         };
         items_list.push(new_item);
       });
@@ -1279,6 +1291,23 @@ export default {
         callback: function (r) {
           if (r.message) {
             evntBus.$emit("open_drafts", r.message);
+          }
+        },
+      });
+    },
+
+    get_open_orders() {
+      const vm = this;
+      frappe.call({
+        method: "posawesome.posawesome.api.posapp.get_open_orders",
+        args: {
+          customer: this.customer,
+          company: this.pos_profile.company,
+        },
+        async: false,
+        callback: function (r) {
+          if (r.message) {
+            evntBus.$emit("open_orders", r.message);
           }
         },
       });

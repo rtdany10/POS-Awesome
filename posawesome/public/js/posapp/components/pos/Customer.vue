@@ -7,24 +7,21 @@
       item-value="name"
       label="Customer"
       color="primary"
-      density="compact"
+      dense
       clearable
-      variant="outlined"
-      class="bg-white"
-      :no-data-text="__('Customer not found')"
+      outlined
+      background-color="white"
+      :no-data="__('Customer not found')"
+      :filter="customFilter"
       :disabled="readonly"
       hide-details
-    >
-      <!-- <template #append-inner>
-        <v-icon @click.stop="new_customer" icon="mdi-plus" />
-      </template>
-      <template #prepend-inner>
-        <v-icon @click.stop="edit_customer" icon="mdi-account-edit" />
-      </template> -->
-    </v-autocomplete>
-
+      append-inner-icon="mdi-plus"
+      @click:append-inner="new_customer"
+      prepend-inner-icon="mdi-account-edit"
+      @click:prepend-inner="edit_customer"
+    />
     <div class="mb-8">
-      <UpdateCustomer />
+      <UpdateCustomer></UpdateCustomer>
     </div>
   </div>
 </template>

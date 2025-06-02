@@ -571,7 +571,7 @@
         </v-col>
         <v-col cols="5">
           <v-row no-gutters class="pa-1 pt-2 pl-0">
-            <v-col class="pa-1">
+            <v-col class="pa-1" v-if="invoiceType != 'Order'">
               <v-btn
                 block
                 class="pa-0"
@@ -579,6 +579,16 @@
                 @click="get_open_orders"
                 dark
                 >{{ __("Open Orders") }}</v-btn
+              >
+            </v-col>
+            <v-col class="pa-1" v-if="invoiceType != 'Order'">
+              <v-btn
+                block
+                class="pa-0"
+                color="primary"
+                @click="open_order_scanner"
+                dark
+                >{{ __("Scan Orders") }}</v-btn
               >
             </v-col>
             <v-col cols="6" class="pa-1">
@@ -1298,6 +1308,14 @@ export default {
     },
 
     get_open_orders() {
+      if (this.invoiceType == "Order") {
+        evntBus.$emit("show_mesage", {
+          text: __("Please change type to Invoice."),
+          color: "error",
+        });
+        frappe.play_sound('error');
+        return;
+      }
       const vm = this;
       frappe.call({
         method: "posawesome.posawesome.api.posapp.get_open_orders",
@@ -1312,6 +1330,18 @@ export default {
           }
         },
       });
+    },
+
+    open_order_scanner() {
+      if (this.invoiceType == "Order") {
+        evntBus.$emit("show_mesage", {
+          text: __("Please change type to Invoice."),
+          color: "error",
+        });
+        frappe.play_sound('error');
+        return;
+      }
+      evntBus.$emit("open_order_scanner", this.invoice_doc);
     },
 
     open_returns() {
@@ -2517,9 +2547,7 @@ export default {
         frappe.defaults.get_default("float_precision") || 2;
       this.currency_precision =
         frappe.defaults.get_default("currency_precision") || 2;
-      this.invoiceType = this.pos_profile.posa_default_sales_order
-        ? "Order"
-        : "Invoice";
+      this.invoiceType = this.pos_profile.posa_default_sales_order ? "Order" : "Invoice";
     });
     evntBus.$on("add_item", (item) => {
       this.add_item(item);

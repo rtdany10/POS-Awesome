@@ -3,6 +3,7 @@
     <ClosingDialog></ClosingDialog>
     <Drafts></Drafts>
     <Orders></Orders>
+    <OrderScan></OrderScan>
     <Returns></Returns>
     <!-- <NewAddress></NewAddress>
     <MpesaPayments></MpesaPayments>
@@ -71,6 +72,7 @@ import Payments from './Payments.vue';
 // import PosCoupons from './PosCoupons.vue';
 import Drafts from './Drafts.vue';
 import Orders from './Orders.vue';
+import OrderScan from './OrderScan.vue';
 import ClosingDialog from './ClosingDialog.vue';
 // import NewAddress from './NewAddress.vue';
 // import Variants from './Variants.vue';
@@ -96,6 +98,7 @@ export default {
     Payments,
     Drafts,
     Orders,
+    OrderScan,
     ClosingDialog,
     Returns,
     // PosOffers,

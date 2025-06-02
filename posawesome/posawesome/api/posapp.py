@@ -1397,10 +1397,19 @@ def get_invoice_doc(invoice_name):
 
 
 @frappe.whitelist()
-def map_order_to_invoice(orders):
+def map_order_to_invoice(orders, target_doc=None):
     from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
-    target_doc = None
+    target_doc = frappe.get_doc(json.loads(target_doc)) if target_doc else None
     for order in json.loads(orders):
+        if target_doc and target_doc.customer:
+            customer = frappe.db.get_value("Sales Order", order, "customer")
+            if target_doc.customer != customer:
+                frappe.throw(
+                    _(
+                        "The selected order belongs to another customer. Current customer: {0}. Order customer: {1}"
+                    ).format(target_doc.customer, customer)
+                )
+
         target_doc = make_sales_invoice(order, target_doc, True)
 
     target_doc.name = f"{frappe.scrub(frappe.utils.get_datetime())}{frappe.generate_hash('', 5)}"

@@ -118,6 +118,7 @@ export default {
           callback: function (r) {
             if (r.message) {
               evntBus.$emit('load_invoice', r.message);
+              vm.selected = [];
               vm.draftsDialog = false;
             }
           }

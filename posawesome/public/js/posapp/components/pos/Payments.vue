@@ -389,6 +389,7 @@ export default {
       }
 
       if (
+        this.invoiceType != "Order" &&
         !this.pos_profile.posa_allow_partial_payment &&
         this.total_payments <
         (this.invoice_doc.rounded_total || this.invoice_doc.grand_total)
@@ -402,6 +403,7 @@ export default {
       }
 
       if (
+        this.invoiceType != "Order" &&
         this.pos_profile.posa_allow_partial_payment &&
         !this.pos_profile.posa_allow_credit_sale &&
         this.total_payments == 0
@@ -502,6 +504,7 @@ export default {
       data["is_cashback"] = this.is_cashback;
 
       const vm = this;
+      const invType = this.invoiceType;
       frappe.call({
         method: "posawesome.posawesome.api.posapp.submit_invoice",
         args: {
@@ -514,11 +517,11 @@ export default {
             if (print) {
               vm.load_print_page();
             }
-            if (vm.invoiceType != "Order") {
+            if (invType != "Order") {
               evntBus.$emit("set_last_invoice", vm.invoice_doc.name);
             }
             evntBus.$emit("show_mesage", {
-              text: `${vm.invoiceType} ${r.message.name} is submitted`,
+              text: `${invType} ${r.message.name} is submitted`,
               color: "success",
             });
             frappe.utils.play_sound("submit");
@@ -557,7 +560,7 @@ export default {
         this.pos_profile.print_format;
       const letter_head = this.pos_profile.letter_head || 0;
       const doctype = (
-        this.invoiceType == "Order" ? "Sales%20Order" : "Sales%20Invoice"
+        this.invoice_doc.doctype == "Sales Order" ? "Sales%20Order" : "Sales%20Invoice"
       );
       const url =
         frappe.urllib.get_base_url() +

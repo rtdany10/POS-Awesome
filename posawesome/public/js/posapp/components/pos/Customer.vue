@@ -65,7 +65,6 @@ export default {
       if (r.message) {
         this.customers = r.message;
         console.info('loadCustomers');
-        console.log(this.customers[0]);
         if (this.pos_profile.posa_local_storage) {
           localStorage.setItem('customer_storage', '');
           localStorage.setItem(

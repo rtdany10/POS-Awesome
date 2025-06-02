@@ -1006,6 +1006,9 @@ export default {
         doc = { ...this.invoice_doc };
       }
       doc.doctype = "Sales Invoice";
+      if (this.invoiceType == "Order") {
+        doc.doctype = "Sales Order";
+      }
       doc.is_pos = 1;
       doc.ignore_pricing_rule = 1;
       doc.company = doc.company || this.pos_profile.company;

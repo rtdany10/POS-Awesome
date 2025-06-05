@@ -591,7 +591,7 @@
                 >{{ __("Scan Orders") }}</v-btn
               >
             </v-col>
-            <v-col cols="6" class="pa-1">
+            <v-col cols="6" class="pa-1" v-if="invoiceType != 'Order'">
               <v-btn
                 block
                 class="pa-0"
@@ -601,7 +601,7 @@
                 >{{ __("Held") }}</v-btn
               >
             </v-col>
-            <v-col cols="6" class="pa-1">
+            <v-col cols="6" class="pa-1" v-if="invoiceType != 'Order'">
               <v-btn
                 block
                 class="pa-0"
@@ -612,7 +612,7 @@
                 >{{ __("Return") }}</v-btn
               >
             </v-col>
-            <v-col cols="6" class="pa-1">
+            <v-col :cols="invoiceType != 'Order' ? 6 : 12" class="pa-1">
               <v-btn
                 block
                 class="pa-0"
@@ -622,7 +622,7 @@
                 >{{ __("Cancel") }}</v-btn
               >
             </v-col>
-            <v-col cols="6" class="pa-1">
+            <v-col cols="6" class="pa-1" v-if="invoiceType != 'Order'">
               <v-btn
                 block
                 class="pa-0"

@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title class="text-h5">
           <span class="headline primary--text">{{
-            __("Cancel Current Invoice?")
+            __("Are you sure want to cancel this doc?")
           }}</span>
         </v-card-title>
         <v-card-actions>
@@ -914,7 +914,7 @@ export default {
 
     cancel_invoice() {
       const doc = this.get_invoice_doc();
-      this.invoiceType = "Invoice";
+      this.invoiceType = this.pos_profile.posa_default_sales_order ? "Order" : "Invoice";
       this.invoiceTypes = ["Invoice", "Order"];
       this.posting_date = frappe.datetime.nowdate();
       if (doc.name && this.pos_profile.posa_allow_delete) {

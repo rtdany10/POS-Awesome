@@ -7,14 +7,15 @@
       item-value="name"
       label="Customer"
       color="primary"
-      dense
+      density="compact"
       clearable
-      outlined
-      background-color="white"
-      :no-data="__('Customer not found')"
-      :filter="customFilter"
+      variant="outlined"
+      class="bg-white"
+      :no-data-text="__('Customer not found')"
+      :custom-filter="customFilter"
       :disabled="readonly"
       hide-details
+      return-object
       append-inner-icon="mdi-plus"
       @click:append-inner="new_customer"
       prepend-inner-icon="mdi-account-edit"
@@ -80,22 +81,20 @@ export default {
     edit_customer() {
       evntBus.$emit('open_update_customer', this.customer_info);
     },
-    customFilter(item, queryText, itemText) {
-      const textOne = item.customer_name
-        ? item.customer_name.toLowerCase()
-        : '';
-      const textTwo = item.tax_id ? item.tax_id.toLowerCase() : '';
-      const textThree = item.email_id ? item.email_id.toLowerCase() : '';
-      const textFour = item.mobile_no ? item.mobile_no.toLowerCase() : '';
-      const textFifth = item.name ? item.name.toLowerCase() : '';
+    customFilter(itemText, queryText, item) {
+      const textOne = item.raw.customer_name?.toLowerCase() || '';
+      const textTwo = item.raw.tax_id?.toLowerCase() || '';
+      const textThree = item.raw.email_id?.toLowerCase() || '';
+      const textFour = item.raw.mobile_no?.toLowerCase() || '';
+      const textFifth = item.raw.name?.toLowerCase() || '';
       const searchText = queryText.toLowerCase();
 
       return (
-        textOne.indexOf(searchText) > -1 ||
-        textTwo.indexOf(searchText) > -1 ||
-        textThree.indexOf(searchText) > -1 ||
-        textFour.indexOf(searchText) > -1 ||
-        textFifth.indexOf(searchText) > -1
+        textOne.includes(searchText) ||
+        textTwo.includes(searchText) ||
+        textThree.includes(searchText) ||
+        textFour.includes(searchText) ||
+        textFifth.includes(searchText)
       );
     },
   },

@@ -391,8 +391,7 @@ export default {
       if (
         this.invoiceType != "Order" &&
         !this.pos_profile.posa_allow_partial_payment &&
-        this.total_payments <
-        (this.invoice_doc.rounded_total || this.invoice_doc.grand_total)
+        this.total_payments < (this.invoice_doc.rounded_total || this.invoice_doc.grand_total)
       ) {
         evntBus.$emit("show_mesage", {
           text: `The amount paid is not complete`,

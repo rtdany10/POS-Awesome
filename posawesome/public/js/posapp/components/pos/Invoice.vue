@@ -650,10 +650,10 @@
               <v-btn
                 block
                 class="pa-0"
-                color="success"
+                :color='invoiceType == "Order" ? "brown" : "success"'
                 @click="show_payment"
                 dark
-                >{{ __("PAY") }}</v-btn
+                >{{ invoiceType == "Order" ? __("ORDER") : __("PAY") }}</v-btn
               >
             </v-col>
           </v-row>
@@ -2561,6 +2561,7 @@ export default {
     evntBus.$on("new_invoice", () => {
       this.invoice_doc = "";
       this.cancel_invoice();
+      this.invoiceType = this.pos_profile.posa_default_sales_order ? "Order" : "Invoice";
     });
     evntBus.$on("load_invoice", (data) => {
       this.new_invoice(data);

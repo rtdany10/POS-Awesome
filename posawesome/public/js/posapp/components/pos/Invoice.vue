@@ -514,18 +514,8 @@
             >
               <v-text-field
                 :model-value="formtFloat(additional_discount_percentage)"
-                @change="
-                  [
-                    setFormatedFloat(
-                      additional_discount_percentage,
-                      'additional_discount_percentage',
-                      null,
-                      false,
-                      $event
-                    ),
-                    update_discount_umount(),
-                  ]
-                "
+                v-model="additional_discount_percentage"
+                @change="update_discount_umount"
                 :rules="[isNumber]"
                 :label="frappe._('Additional Discount %')"
                 suffix="%"
@@ -752,11 +742,19 @@ export default {
       this.inv_items.forEach((item) => {
         sum += flt(item.qty) * flt(item.rate);
       });
-      sum -= this.flt(this.discount_amount);
+
+      if (this.additional_discount_percentage > 0) {
+        const percentage_discount = (sum * this.additional_discount_percentage) / 100;
+        sum -= percentage_discount;
+      } else{
+        sum -= this.flt(this.discount_amount);
+      }
+
       sum += this.flt(this.delivery_charges_rate);
+
       return this.flt(sum, this.currency_precision);
     },
-    total_items_discount_amount() {
+    total_items_discount_amount() {      
       let sum = 0;
       this.inv_items.forEach((item) => {
         sum += flt(item.qty) * flt(item.discount_amount);

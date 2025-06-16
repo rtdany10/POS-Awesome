@@ -92,7 +92,7 @@ def create_sales_order(doc):
 
 def make_sales_order(source_name, target_doc=None, ignore_permissions=True):
     def set_missing_values(source, target):
-        target.ignore_pricing_rule = 1
+        # target.ignore_pricing_rule = 1
         target.flags.ignore_permissions = ignore_permissions
         target.run_method("set_missing_values")
         target.run_method("calculate_taxes_and_totals")

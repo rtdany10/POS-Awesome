@@ -1374,15 +1374,18 @@ def set_customer_info(customer, fieldname, value=""):
 
 
 @frappe.whitelist()
-def search_invoices_for_return(invoice_name, company):
+def search_invoices_for_return(invoice_name, company, customer=None):
+    filters={
+        "name": ["like", f"%{invoice_name}%"],
+        "company": company,
+        "docstatus": 1,
+        "is_return": 0,
+    }
+    if customer:
+        filters["customer"] = customer
     invoices_list = frappe.get_list(
         "Sales Invoice",
-        filters={
-            "name": ["like", f"%{invoice_name}%"],
-            "company": company,
-            "docstatus": 1,
-            "is_return": 0,
-        },
+        filters=filters,
         fields=["name as inv_id", "customer", "posting_date", "grand_total"],
         limit_page_length=0,
         order_by="customer",

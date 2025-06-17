@@ -58,6 +58,7 @@ export default {
     dialog_data: '',
     company: '',
     invoice_name: '',
+    customer: '',
     headers: [
       {
         title: __('Customer'),
@@ -101,6 +102,7 @@ export default {
         args: {
           invoice_name: vm.invoice_name,
           company: vm.company,
+          customer: vm.customer,
         },
         async: false,
         callback: function (r) {
@@ -159,6 +161,10 @@ export default {
       this.invoice_name = '';
       this.dialog_data = '';
       this.selected = [];
+    });
+
+    evntBus.$on('set_customer', (customer) => {
+      this.customer = customer;
     });
   },
 };

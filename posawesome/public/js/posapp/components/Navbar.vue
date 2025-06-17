@@ -38,6 +38,15 @@
                       __('Print Last Invoice')
                     }}</v-list-item-title>
                 </v-list-item>
+                <v-list-item
+                  @click="print_last_order"
+                  v-if="pos_profile.posa_allow_print_last_invoice && this.last_order"
+                  prepend-icon="mdi-printer"
+                >
+                    <v-list-item-title>{{
+                      __('Print Last Order')
+                    }}</v-list-item-title>
+                </v-list-item>
                 <v-divider class="my-0"></v-divider>
                 <v-list-item @click="logOut" prepend-icon="mdi-logout">
                     <v-list-item-title>{{ __('Logout') }}</v-list-item-title>
@@ -109,6 +118,7 @@ export default {
       freezeTitle: '',
       freezeMsg: '',
       last_invoice: '',
+      last_order: '',
     };
   },
   methods: {
@@ -172,6 +182,30 @@ export default {
         true
       );
     },
+    print_last_order() {
+      if (!this.last_order) return;
+      const print_format =
+        this.pos_profile.print_format_for_online ||
+        this.pos_profile.print_format;
+      const letter_head = this.pos_profile.letter_head || 0;
+      const url =
+        frappe.urllib.get_base_url() +
+        '/printview?doctype=Sales%20Order&name=' +
+        this.last_order +
+        '&trigger_print=1' +
+        '&format=' +
+        print_format +
+        '&no_letterhead=' +
+        letter_head;
+      const printWindow = window.open(url, 'Print');
+      printWindow.addEventListener(
+        'load',
+        function () {
+          printWindow.print();
+        },
+        true
+      );
+    },
   },
   created: function () {
     this.$nextTick(function () {
@@ -196,6 +230,9 @@ export default {
       });
       evntBus.$on('set_last_invoice', (data) => {
         this.last_invoice = data;
+      });
+      evntBus.$on('set_last_order', (data) => {
+        this.last_order = data;
       });
       evntBus.$on('freeze', (data) => {
         this.freeze = true;

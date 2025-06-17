@@ -540,6 +540,8 @@ export default {
             }
             if (invType != "Order") {
               evntBus.$emit("set_last_invoice", vm.invoice_doc.name);
+            } else {
+              evntBus.$emit("set_last_order", vm.invoice_doc.name);
             }
             evntBus.$emit("show_mesage", {
               text: `${invType} ${r.message.name} is submitted`,

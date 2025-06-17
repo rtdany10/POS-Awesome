@@ -249,17 +249,30 @@
         <v-divider></v-divider>
         <v-row class="pb-0 mb-2" align="start">
           <v-col cols="12">
-            <v-autocomplete dense clearable auto-select-first outlined color="primary" :label="frappe._('Sales Person')"
-              v-model="sales_person" :items="sales_persons" item-text="sales_person_name" item-value="name"
-              background-color="white" :no-data-text="__('Sales Person not found')" hide-details
-              :filter="salesPersonFilter" :disabled="readonly">
-              <template v-slot:item="data">
-                <template>
-                  <v-list-item-title class="primary--text subtitle-1"
-                    v-html="data.item.sales_person_name"></v-list-item-title>
-                  <v-list-item-subtitle v-if="data.item.sales_person_name != data.item.name"
-                    v-html="`ID: ${data.item.name}`"></v-list-item-subtitle>
-                </template>
+            <v-autocomplete
+              v-model="sales_person"
+              :items="sales_persons"
+              :item-title="'sales_person_name'"
+              :item-value="'name'"
+              :label="frappe._('Sales Person')"
+              :no-data-text="__('Sales Person not found')"
+              :filter="salesPersonFilter"
+              :disabled="readonly"
+              variant="outlined"
+              color="primary"
+              clearable
+              density="compact"
+              class="bg-white"
+              hide-details
+            >
+              <template #item="{ props, item }">
+                <v-list-item v-bind="props">
+                  <v-list-item-title class="text-primary text-subtitle-1" v-html="item.raw.sales_person_name" />
+                  <v-list-item-subtitle
+                    v-if="item.raw.sales_person_name !== item.raw.name"
+                    v-html="`ID: ${item.raw.name}`"
+                  />
+                </v-list-item>
               </template>
             </v-autocomplete>
           </v-col>
@@ -359,6 +372,15 @@ export default {
       if (!this.invoice_doc.is_return && this.total_payments < 0) {
         evntBus.$emit("show_mesage", {
           text: `Payments not correct`,
+          color: "error",
+        });
+        frappe.utils.play_sound("error");
+        return;
+      }
+
+      if (!this.sales_person && this.invoiceType == "Order") {
+        evntBus.$emit("show_mesage", {
+          text: `Please set Sales Person`,
           color: "error",
         });
         frappe.utils.play_sound("error");
@@ -471,7 +493,7 @@ export default {
       this.customer_credit_dict = [];
       this.redeem_customer_credit = false;
       this.is_cashback = true;
-      this.sales_person = "";
+      // this.sales_person = "";
 
       evntBus.$emit("new_invoice", "false");
       this.back_to_invoice();

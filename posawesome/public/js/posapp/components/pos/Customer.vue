@@ -117,7 +117,7 @@ export default {
         this.customers.push(customer);
       });
       evntBus.$on('set_customer_readonly', (value) => {
-        this.readonly = value;
+        this.readonly = Boolean(value);
       });
       evntBus.$on('set_customer_info_to_edit', (data) => {
         this.customer_info = data;

@@ -804,6 +804,7 @@ def submit_invoice(invoice, data):
     # set_batch_nos_for_bundels(invoice_doc, "warehouse", throw=True)
     invoice_doc.due_date = data.get("due_date")
     invoice_doc.flags.ignore_permissions = True
+    invoice_doc.flags.ignore_sales_team = True
     frappe.flags.ignore_account_permission = True
     invoice_doc.posa_is_printed = 1
     invoice_doc.save()

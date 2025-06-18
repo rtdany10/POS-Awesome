@@ -2612,7 +2612,7 @@ export default {
     document.addEventListener("keydown", this.shortSelectDiscount.bind(this));
     this.$nextTick(function () {
       evntBus.$on('set_customer_readonly', (value) => {
-        this.readonly = value;
+        this.readonly = Boolean(value);
       });
     });
   },

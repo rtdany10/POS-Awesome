@@ -257,7 +257,7 @@
               :label="frappe._('Sales Person')"
               :no-data-text="__('Sales Person not found')"
               :filter="salesPersonFilter"
-              :disabled="readonly"
+              :disabled="readonly || invoiceType != 'Order'"
               variant="outlined"
               color="primary"
               clearable
@@ -275,6 +275,9 @@
                 </v-list-item>
               </template>
             </v-autocomplete>
+          </v-col>
+          <v-col cols="12" v-if="invoiceType != 'Order'">
+            <v-btn block large color="primary" dark @click="collect_feedback">{{ __("Collect Feedback") }}</v-btn>
           </v-col>
         </v-row>
       </div>
@@ -321,6 +324,10 @@
         </v-card>
       </v-dialog>
     </div>
+
+    <div class="mb-8">
+      <Feedback></Feedback>
+    </div>
   </div>
 </template>
 
@@ -328,6 +335,7 @@
 import { evntBus } from "../../bus";
 import format from "../../format";
 import { inject } from 'vue';
+import Feedback from './Feedback.vue';
 
 export default {
   mixins: [format],
@@ -363,10 +371,17 @@ export default {
     readonly: false,
   }),
 
+  components: {
+    Feedback,
+  },
+
   methods: {
     back_to_invoice() {
       evntBus.$emit("show_payment", "false");
       evntBus.$emit("set_customer_readonly", false);
+    },
+    collect_feedback() {
+      evntBus.$emit("collect_feedback", this.invoice_doc.sales_team);
     },
     submit(event, payment_received = false, print = false) {
       if (!this.invoice_doc.is_return && this.total_payments < 0) {
@@ -1039,6 +1054,14 @@ export default {
           this.invoice_doc.shipping_address_name = null;
         }
       });
+      evntBus.$on("submit_feedback", (feedback_map) => {
+        this.invoice_doc.sales_team.forEach((row) => {
+          if (feedback_map[row.sales_person]) {
+            row.feedback = feedback_map[row.sales_person].feedback;
+            row.rating = feedback_map[row.sales_person].rating;
+          }
+        });
+      });
     });
     evntBus.$on("update_customer", (customer) => {
       if (this.customer != customer) {
@@ -1061,7 +1084,7 @@ export default {
     document.addEventListener("keydown", this.shortPay.bind(this));
     this.$nextTick(function () {
       evntBus.$on('set_customer_readonly', (value) => {
-        this.readonly = value;
+        this.readonly = Boolean(value);
       });
     });
   },
@@ -1125,6 +1148,9 @@ export default {
       }
     },
     sales_person() {
+      if (this.invoiceType != 'Order') {
+        return;
+      }
       if (this.sales_person) {
         this.invoice_doc.sales_team = [
           {

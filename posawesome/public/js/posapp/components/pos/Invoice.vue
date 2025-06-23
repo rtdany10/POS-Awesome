@@ -161,6 +161,12 @@
           hide-default-footer
         >
           <template #item.qty="{ item }">{{ formtFloat(item.qty) }}</template>
+          <template #item.price_list_rate="{ item }">
+            {{ currencySymbol(pos_profile.currency) }} {{ formtCurrency(item.price_list_rate) }}
+          </template>
+          <template #item.discount_amount="{ item }">
+            {{ currencySymbol(pos_profile.currency) }} {{ formtCurrency(item.discount_amount) }}
+          </template>
           <template #item.rate="{ item }">
             {{ currencySymbol(pos_profile.currency) }} {{ formtCurrency(item.rate) }}
           </template>
@@ -718,9 +724,11 @@ export default {
         },
         { title: __("QTY"), value: "qty", align: "center" },
         { title: __("UOM"), value: "uom", align: "center" },
+        { title: __("PL Rate"), value: "price_list_rate", align: "center" },
+        { title: __("Disc Amt"), value: "discount_amount", align: "center" },
         { title: __("Rate"), value: "rate", align: "center" },
         { title: __("Amount"), value: "amount", align: "center" },
-        { title: __("is Offer"), value: "posa_is_offer", align: "center" },
+        // { title: __("is Offer"), value: "posa_is_offer", align: "center" },
       ],
       readonly: false,
     };

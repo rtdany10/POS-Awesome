@@ -2599,6 +2599,11 @@ export default {
     evntBus.$on("set_new_line", (data) => {
       this.new_line = data;
     });
+    evntBus.$on("apply_offers", () => {
+      let doc = this.proces_invoice();
+      evntBus.$emit('load_invoice', doc);
+      this.$forceUpdate();
+    });
   },
   beforeDestroy() {
     evntBus.$off("register_pos_profile");

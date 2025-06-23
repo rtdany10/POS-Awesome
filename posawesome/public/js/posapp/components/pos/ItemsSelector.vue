@@ -157,7 +157,7 @@
             <v-btn small value="card">{{ __('Card') }}</v-btn>
           </v-btn-toggle>
         </v-col>
-        <v-col cols="4" class="mt-2 pr-1">
+        <!-- <v-col cols="4" class="mt-2 pr-1">
           <v-btn small block color="primary" text @click="show_coupons">
             {{ couponsCount }} {{ __('Coupons') }}
           </v-btn>
@@ -165,6 +165,11 @@
         <v-col cols="5" class="mt-2 pl-1">
           <v-btn small block color="primary" text @click="show_offers">
             {{ offersCount }} {{ __('Offers') }} : {{ appliedOffersCount }} {{ __('Applied') }}
+          </v-btn>
+        </v-col> -->
+        <v-col cols="9" class="mt-2 pl-1">
+          <v-btn small block color="primary" text @click="apply_offers">
+            {{ __('Apply Offers') }}
           </v-btn>
         </v-col>
       </v-row>
@@ -223,6 +228,9 @@ export default {
   },
 
   methods: {
+    apply_offers() {
+      evntBus.$emit('apply_offers');
+    },
     show_offers() {
       // evntBus.$emit('show_offers', 'true');
       evntBus.$emit("show_mesage", {

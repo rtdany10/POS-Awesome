@@ -1097,13 +1097,18 @@ export default {
       return payments;
     },
 
-    update_invoice(doc) {
+    update_invoice(doc, do_not_save=false) {
+      let args = {
+        data: doc,
+      };
+      if (do_not_save) {
+        args.do_not_save = do_not_save;
+      }
+
       const vm = this;
       frappe.call({
         method: "posawesome.posawesome.api.posapp.update_invoice",
-        args: {
-          data: doc,
-        },
+        args: args,
         async: false,
         callback: function (r) {
           if (r.message) {
@@ -2600,9 +2605,10 @@ export default {
       this.new_line = data;
     });
     evntBus.$on("apply_offers", () => {
-      let doc = this.proces_invoice();
-      evntBus.$emit('load_invoice', doc);
-      this.$forceUpdate();
+      let doc = this.get_invoice_doc();
+      doc = this.update_invoice(doc, do_not_save=true);
+      this.inv_items = doc.items;
+      this.update_items_details(this.inv_items);
     });
   },
   beforeDestroy() {

@@ -663,7 +663,7 @@ def add_taxes_from_tax_template(item, parent_doc):
 
 
 @frappe.whitelist()
-def update_invoice(data):
+def update_invoice(data, do_not_save=False):
     data = json.loads(data)
     doctype = data.get("doctype", "Sales Invoice")
     existing_inv = data.get("name") and frappe.db.exists(
@@ -677,6 +677,7 @@ def update_invoice(data):
         invoice_doc = frappe.get_doc(data)
 
     if doctype == "Sales Order":
+        invoice_doc.is_from_pos = 1
         if not invoice_doc.get("delivery_date"):
             invoice_doc.delivery_date = nowdate()
 
@@ -721,7 +722,9 @@ def update_invoice(data):
             for tax in invoice_doc.taxes:
                 tax.included_in_print_rate = 1
 
-    invoice_doc.save()
+    if not do_not_save:
+        invoice_doc.save()
+
     return invoice_doc
 
 

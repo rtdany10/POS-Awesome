@@ -49,7 +49,7 @@ def get_opening_dialog_data():
     payment_method_table = (
         "POS Payment Method" if get_version() == 13 else "Sales Invoice Payment"
     )
-    data["payments_method"] = frappe.get_list(
+    data["payments_method"] = frappe.db.get_all(
         payment_method_table,
         filters={"parent": ["in", pos_profiles_list]},
         fields=["*"],

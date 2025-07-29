@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="cancel_dialog" max-width="330">
+    <v-dialog v-model="cancel_dialog" max-width="450">
       <v-card>
         <v-card-title class="text-h5">
           <span class="headline primary--text">{{

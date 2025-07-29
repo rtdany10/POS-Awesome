@@ -520,6 +520,17 @@ export default {
           payment.amount = flt(payment.amount);
           totalPayedAmount += payment.amount;
         });
+      } else {
+        if (this.sales_person) {
+          this.invoice_doc.sales_team = [
+            {
+              sales_person: this.sales_person,
+              allocated_percentage: 100,
+            },
+          ];
+        } else {
+          this.invoice_doc.sales_team = [];
+        }
       }
       if (this.invoice_doc.is_return && totalPayedAmount == 0) {
         this.invoice_doc.is_pos = 0;

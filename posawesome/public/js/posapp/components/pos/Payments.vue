@@ -87,8 +87,6 @@
                 :label="frappe._(payment.mode_of_payment)"
                 bg-color="white"
                 hide-details
-                :model-value="formtCurrency(payment.amount)"
-                @update:model-value="setFormatedCurrency(payment, 'amount', null, true, $event)"
                 :rules="[isNumber]"
                 :prefix="currencySymbol(invoice_doc.currency)"
                 @focus="set_rest_amount(payment.idx)"

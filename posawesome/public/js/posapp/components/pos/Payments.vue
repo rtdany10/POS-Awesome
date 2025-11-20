@@ -1283,10 +1283,8 @@ export default {
     },
     available_pioints_amount() {
       let amount = 0;
-      if (this.customer_info.loyalty_points) {
-        amount =
-          this.customer_info.loyalty_points *
-          this.customer_info.conversion_factor;
+      if (this.invoice_doc.total_loyalty_points > 0) {
+        amount += this.invoice_doc.total_loyalty_points
       }
       return amount;
     },
@@ -1430,7 +1428,7 @@ export default {
         this.invoice_doc.redeem_loyalty_points = 0;
         this.invoice_doc.loyalty_points = 0;
         evntBus.$emit("show_mesage", {
-          text: `Loyalty Amount can not be more then ${this.available_pioints_amount}`,
+          text: `Loyalty redemption can not be more than ${this.available_pioints_amount}`,
           color: "error",
         });
       } else {

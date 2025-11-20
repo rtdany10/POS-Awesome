@@ -109,7 +109,7 @@
                 class=""
                 color="primary"
                 dark
-                @click="set_full_amount(payment.idx)"
+                @click="set_rest_amount(payment.idx)"
                 >{{ payment.mode_of_payment }}</v-btn
               >
             </v-col>

@@ -1250,7 +1250,8 @@ export default {
 
   computed: {
     total_payments() {
-      let total = parseFloat(this.invoice_doc.loyalty_amount);
+      // let total = parseFloat(this.invoice_doc.loyalty_amount);
+      let total = this.flt(this.loyalty_amount);
       if (this.invoice_doc && this.invoice_doc.payments) {
         this.invoice_doc.payments.forEach((payment) => {
           total += this.flt(payment.amount);
@@ -1359,7 +1360,7 @@ export default {
             payment.base_amount = 0;
           });
         }
-        this.loyalty_amount = 0;
+        this.loyalty_amount = this.flt(this.invoice_doc.loyalty_amount);
         this.get_addresses();
         this.get_sales_person_names();
       });

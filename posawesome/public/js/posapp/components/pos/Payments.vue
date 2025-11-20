@@ -89,7 +89,7 @@
                 hide-details
                 :rules="[isNumber]"
                 :prefix="currencySymbol(invoice_doc.currency)"
-                @focus="set_rest_amount(payment.idx)"
+                @update:focused="(isFocused) => isFocused && set_rest_amount(payment.idx)"
                 :readonly="invoice_doc.is_return"
               ></v-text-field>
             </v-col>
@@ -1433,6 +1433,7 @@ export default {
           color: "error",
         });
       } else {
+        this.invoice_doc.redeem_loyalty_points = 1;
         this.invoice_doc.loyalty_points = this.flt(this.loyalty_amount);
       }
     },

@@ -1432,10 +1432,7 @@ export default {
           color: "error",
         });
       } else {
-        this.invoice_doc.loyalty_amount = this.flt(this.loyalty_amount);
-        this.invoice_doc.redeem_loyalty_points = 1;
-        this.invoice_doc.loyalty_points =
-          this.flt(this.loyalty_amount) / this.customer_info.conversion_factor;
+        this.invoice_doc.loyalty_points = this.flt(this.loyalty_amount);
       }
     },
     is_credit_sale(value) {

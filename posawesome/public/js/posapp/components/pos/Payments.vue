@@ -169,6 +169,7 @@
               v-model="loyalty_amount"
               type="number"
               :prefix="currencySymbol(invoice_doc.currency)"
+              @focus="setLoyaltyAmount"
             ></v-text-field>
           </v-col>
           <v-col cols="5">
@@ -732,6 +733,11 @@ export default {
   }),
 
   methods: {
+    setLoyaltyAmount() {
+      if (!this.loyalty_amount) {
+        this.loyalty_amount = this.available_pioints_amount;
+      }
+    },
     back_to_invoice() {
       evntBus.$emit("show_payment", "false");
       evntBus.$emit("set_customer_readonly", false);

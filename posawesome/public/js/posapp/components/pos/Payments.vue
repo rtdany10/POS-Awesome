@@ -921,8 +921,8 @@ export default {
     },
     set_rest_amount(idx) {
       this.clear_all_amounts();
-      this.invoice_doc.payments[idx].amount = this.diff_payment;
-      console.log(this.invoice_doc.payments[idx].amount);
+      this.invoice_doc.payments[idx-1].amount = this.diff_payment;
+      console.log(this.invoice_doc.payments[idx-1].amount);
     },
     clear_all_amounts() {
       this.invoice_doc.payments.forEach((payment) => {
@@ -1426,6 +1426,15 @@ export default {
   watch: {
     loyalty_amount(value) {
       this.clear_all_amounts();
+      if (this.available_pioints_amount < 10) {
+        this.loyalty_amount = 0;
+        this.invoice_doc.redeem_loyalty_points = 0;
+        this.invoice_doc.loyalty_points = this.flt(this.loyalty_amount);
+        evntBus.$emit("show_mesage", {
+          text: `Loyalty redemption is not allowed for points lesser than 10.`,
+          color: "error",
+        });
+      }
       if (value > this.available_pioints_amount || value < 0) {
         this.loyalty_amount = this.available_pioints_amount;
         this.invoice_doc.redeem_loyalty_points = 1;

@@ -1193,6 +1193,7 @@ def create_customer(
     territory=None,
     customer_type=None,
     gender=None,
+    nationality=None,
     method="create",
 ):
     pos_profile = json.loads(pos_profile_doc)
@@ -1211,6 +1212,7 @@ def create_customer(
                     "posa_birthday": birthday,
                     "customer_type": customer_type,
                     "gender": gender,
+                    "nationality": nationality,
                 }
             )
             if customer_group:
@@ -1237,6 +1239,7 @@ def create_customer(
         customer_doc.territory = territory
         customer_doc.customer_group = customer_group
         customer_doc.gender = gender
+        customer_doc.nationality = nationality
         customer_doc.save()
         if mobile_no != customer_doc.mobile_no:
             set_customer_info(customer_doc.name, "mobile_no", mobile_no)

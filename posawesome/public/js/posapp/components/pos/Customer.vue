@@ -80,6 +80,7 @@ export default {
       });
     },
     new_customer() {
+      console.log("hiiiiii");
       evntBus.$emit('open_update_customer', null);
     },
     edit_customer() {

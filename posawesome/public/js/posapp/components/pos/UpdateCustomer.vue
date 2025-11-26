@@ -51,7 +51,7 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Email Id')"
+                  :label="frappe._('Email ID')"
                   background-color="white"
                   hide-details
                   v-model="email_id"
@@ -66,46 +66,20 @@
                 ></v-select>
               </v-col>
               <v-col cols="6">
-                <v-text-field
-                  dense
-                  color="primary"
-                  :label="frappe._('Referral Code')"
-                  background-color="white"
-                  hide-details
-                  v-model="referral_code"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-menu
-                  ref="birthday_menu"
-                  v-model="birthday_menu"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  dense
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="birthday"
-                      :label="frappe._('Birthday')"
-                      readonly
-                      dense
-                      clearable
-                      hide-details
-                      v-bind="attrs"
-                      v-on="on"
-                      color="primary"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="birthday"
+                <v-autocomplete
+                    clearable
+                    dense
+                    auto-select-first
                     color="primary"
-                    no-title
-                    scrollable
-                    :max="frappe.datetime.now_date()"
-                    @input="birthday_menu = false"
+                    :label="frappe._('Nationality')"
+                    v-model="nationality"
+                    :items="countries"
+                    background-color="white"
+                    :no-data-text="__('Countries not found')"
+                    hide-details
+                    required
                   >
-                  </v-date-picker>
-                </v-menu>
+                  </v-autocomplete>
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
@@ -176,7 +150,14 @@
 
 <script>
 import { evntBus } from '../../bus';
+import { inject } from 'vue';
+
 export default {
+  setup() {
+    const __ = inject('__');
+    const frappe = inject('frappe');
+    return { __, frappe };
+  },
   data: () => ({
     customerDialog: false,
     pos_profile: '',
@@ -197,6 +178,8 @@ export default {
     gender: '',
     loyalty_points: null,
     loyalty_program: null,
+    nationality: '',
+    countries: [],
   }),
   watch: {},
   methods: {
@@ -213,6 +196,7 @@ export default {
       this.birthday = '';
       this.group = frappe.defaults.get_user_default('Customer Group');
       this.territory = frappe.defaults.get_user_default('Territory');
+      this.nationality = frappe.defaults.get_user_default('Country');
       this.customer_id = '';
       this.customer_type = 'Individual';
       this.gender = '';
@@ -270,6 +254,19 @@ export default {
           }
         });
     },
+    async getCountries() {
+      const vm = this;
+      const data = await frappe.db.get_list('Country', {
+        fields: ['name'],
+        page_length: 250,
+        order_by: 'name',
+      });
+      if (data.length > 0) {
+        data.forEach((el) => {
+          vm.countries.push(el.name);
+        });
+      }
+    },
     submit_dialog() {
       // validate if all required fields are filled
       if (!this.customer_name) {
@@ -308,6 +305,7 @@ export default {
           territory: this.territory,
           customer_type: this.customer_type,
           gender: this.gender,
+          nationality: this.nationality,
           method: this.customer_id ? 'update' : 'create',
           pos_profile_doc: this.pos_profile,
         };
@@ -370,9 +368,11 @@ export default {
     this.getCustomerGroups();
     this.getCustomerTerritorys();
     this.getGenders();
+    this.getCountries();
     // set default values for customer group and territory from user defaults
     this.group = frappe.defaults.get_user_default('Customer Group');
     this.territory = frappe.defaults.get_user_default('Territory');
+    this.nationality = frappe.defaults.get_user_default('Country');
   },
 };
 </script>

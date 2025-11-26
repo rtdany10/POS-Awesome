@@ -854,6 +854,9 @@ export default {
         return;
       }
 
+      if (this.loyalty_amount < 10) {
+        this.invoice_doc.redeem_loyalty_points = 0;
+      }
       this.submit_invoice(print);
       this.customer_credit_dict = [];
       this.redeem_customer_credit = false;

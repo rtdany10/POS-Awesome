@@ -913,15 +913,8 @@ export default {
       });
     },
     set_rest_amount(idx) {
-      this.invoice_doc.payments.forEach((payment) => {
-        if (
-          payment.idx == idx &&
-          payment.amount == 0 &&
-          this.diff_payment > 0
-        ) {
-          payment.amount = this.diff_payment;
-        }
-      });
+      this.clear_all_amounts();
+      this.invoice_doc.payments[idx].amount = this.diff_payment;
     },
     clear_all_amounts() {
       this.invoice_doc.payments.forEach((payment) => {
@@ -1424,10 +1417,11 @@ export default {
 
   watch: {
     loyalty_amount(value) {
+      this.clear_all_amounts();
       if (value > this.available_pioints_amount) {
-        this.invoice_doc.loyalty_amount = 0;
-        this.invoice_doc.redeem_loyalty_points = 0;
-        this.invoice_doc.loyalty_points = 0;
+        this.loyalty_amount = this.available_pioints_amount;
+        this.invoice_doc.redeem_loyalty_points = 1;
+        this.invoice_doc.loyalty_points = this.flt(this.loyalty_amount);
         evntBus.$emit("show_mesage", {
           text: `Loyalty redemption can not be more than ${this.available_pioints_amount}`,
           color: "error",

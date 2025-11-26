@@ -734,7 +734,8 @@ export default {
 
   methods: {
     setLoyaltyAmount() {
-      if (!this.loyalty_amount) {
+      console.log("triggered");
+      if (this.loyalty_amount < 1) {
         this.loyalty_amount = this.available_pioints_amount;
       }
     },
@@ -921,6 +922,7 @@ export default {
     set_rest_amount(idx) {
       this.clear_all_amounts();
       this.invoice_doc.payments[idx].amount = this.diff_payment;
+      console.log(this.invoice_doc.payments[idx].amount);
     },
     clear_all_amounts() {
       this.invoice_doc.payments.forEach((payment) => {
@@ -1424,7 +1426,7 @@ export default {
   watch: {
     loyalty_amount(value) {
       this.clear_all_amounts();
-      if (value > this.available_pioints_amount) {
+      if (value > this.available_pioints_amount || value < 0) {
         this.loyalty_amount = this.available_pioints_amount;
         this.invoice_doc.redeem_loyalty_points = 1;
         this.invoice_doc.loyalty_points = this.flt(this.loyalty_amount);

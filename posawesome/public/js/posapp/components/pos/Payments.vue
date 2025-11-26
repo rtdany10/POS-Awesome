@@ -1426,7 +1426,7 @@ export default {
   watch: {
     loyalty_amount(value) {
       this.clear_all_amounts();
-      if (this.available_pioints_amount < 10) {
+      if (this.available_pioints_amount < 10 || this.loyalty_amount < 10) {
         this.loyalty_amount = 0;
         this.invoice_doc.redeem_loyalty_points = 0;
         this.invoice_doc.loyalty_points = this.flt(this.loyalty_amount);

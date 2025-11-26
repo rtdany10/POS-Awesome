@@ -45,6 +45,7 @@
                   background-color="white"
                   hide-details
                   v-model="mobile_no"
+                  :required="!skip_loyalty"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -55,6 +56,7 @@
                   background-color="white"
                   hide-details
                   v-model="email_id"
+                  :required="!skip_loyalty"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -63,23 +65,24 @@
                   label="Gender"
                   :items="genders"
                   v-model="gender"
+                  :required="!skip_loyalty"
                 ></v-select>
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
-                    clearable
-                    dense
-                    auto-select-first
-                    color="primary"
-                    :label="frappe._('Nationality')"
-                    v-model="nationality"
-                    :items="countries"
-                    background-color="white"
-                    :no-data-text="__('Countries not found')"
-                    hide-details
-                    required
-                  >
-                  </v-autocomplete>
+                  clearable
+                  dense
+                  auto-select-first
+                  color="primary"
+                  :label="frappe._('Nationality')"
+                  v-model="nationality"
+                  :items="countries"
+                  background-color="white"
+                  :no-data-text="__('Countries not found')"
+                  hide-details
+                  :required="!skip_loyalty"
+                >
+                </v-autocomplete>
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
@@ -112,6 +115,14 @@
                   required
                 >
                 </v-autocomplete>
+              </v-col>
+              <v-col cols="6" v-if="!loyalty_program">
+                <v-checkbox
+                  v-model="skip_loyalty"
+                  :label="frappe._('Skip Loyalty Program Enrollment')"
+                  density="compact"
+                  hide-details
+                ></v-checkbox>
               </v-col>
               <v-col cols="6" v-if="loyalty_program">
                 <v-text-field
@@ -180,6 +191,7 @@ export default {
     loyalty_program: null,
     nationality: '',
     countries: [],
+    skip_loyalty: false,
   }),
   watch: {},
   methods: {
@@ -289,6 +301,31 @@ export default {
           color: 'error',
         });
         return;
+      }
+      if (!this.skip_loyalty) {
+        if (!this.mobile_no) {
+          evntBus.$emit('show_mesage', {
+            text: __('Mobile number is required for loyalty enrollment.'),
+            color: 'error',
+          });
+          return;
+        }
+
+        if (!this.email_id) {
+          evntBus.$emit('show_mesage', {
+            text: __('Email ID is required for loyalty enrollment.'),
+            color: 'error',
+          });
+          return;
+        }
+
+        if (!this.nationality) {
+          evntBus.$emit('show_mesage', {
+            text: __('Nationality is required for loyalty enrollment.'),
+            color: 'error',
+          });
+          return;
+        }
       }
       if (this.customer_name) {
         const vm = this;

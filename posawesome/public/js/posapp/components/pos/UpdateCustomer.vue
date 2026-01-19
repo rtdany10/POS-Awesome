@@ -31,16 +31,6 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Tax ID')"
-                  background-color="white"
-                  hide-details
-                  v-model="tax_id"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  dense
-                  color="primary"
                   :label="frappe._('Mobile No')"
                   background-color="white"
                   hide-details
@@ -131,22 +121,6 @@
                   :items="groups"
                   background-color="white"
                   :no-data-text="__('Group not found')"
-                  hide-details
-                  required
-                >
-                </v-autocomplete>
-              </v-col>
-              <v-col cols="6">
-                <v-autocomplete
-                  clearable
-                  dense
-                  auto-select-first
-                  color="primary"
-                  :label="frappe._('Territory') + ' *'"
-                  v-model="territory"
-                  :items="territorys"
-                  background-color="white"
-                  :no-data-text="__('Territory not found')"
                   hide-details
                   required
                 >
@@ -273,7 +247,7 @@ export default {
     customer_id: '',
     customer_name: '',
     tax_id: '',
-    mobile_no: '',
+    mobile_no: '+9715',
     email_id: '',
     referral_code: '',
     birthday: null,
@@ -323,7 +297,7 @@ export default {
     clear_customer() {
       this.customer_name = '';
       this.tax_id = '';
-      this.mobile_no = '';
+      this.mobile_no = '+9715';
       this.email_id = '';
       this.referral_code = '';
       this.birthday = '';
@@ -360,6 +334,7 @@ export default {
         });
     },
     getCustomerTerritorys() {
+      return;
       if (this.territorys.length > 0) return;
       const vm = this;
       frappe.db
@@ -378,25 +353,26 @@ export default {
         });
     },
     getGenders() {
-      const vm = this;
-      frappe.db
-        .get_list('Gender', {
-          fields: ['name'],
-          page_length: 10,
-        })
-        .then((data) => {
-          if (data.length > 0) {
-            data.forEach((el) => {
-              vm.genders.push(el.name);
-            });
-          }
-        });
+      this.genders = ["Male", "Female", "Prefer not to say"]
+      // const vm = this;
+      // frappe.db
+      //   .get_list('Gender', {
+      //     fields: ['name'],
+      //     page_length: 10,
+      //   })
+      //   .then((data) => {
+      //     if (data.length > 0) {
+      //       data.forEach((el) => {
+      //         vm.genders.push(el.name);
+      //       });
+      //     }
+      //   });
     },
     async getCountries() {
       const vm = this;
       const data = await frappe.db.get_list('Country', {
         fields: ['name'],
-        page_length: 250,
+        limit: 250,
         order_by: 'name',
       });
       if (data.length > 0) {
@@ -421,13 +397,13 @@ export default {
         });
         return;
       }
-      if (!this.territory) {
-        evntBus.$emit('show_mesage', {
-          text: __('Customer territory is required.'),
-          color: 'error',
-        });
-        return;
-      }
+      // if (!this.territory) {
+      //   evntBus.$emit('show_mesage', {
+      //     text: __('Customer territory is required.'),
+      //     color: 'error',
+      //   });
+      //   return;
+      // }
       // if (!this.skip_loyalty) {
       //   if (!this.gender) {
       //     evntBus.$emit('show_mesage', {

@@ -208,7 +208,6 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
                 AND itemdef.company = "{company}"
             WHERE
                 itm.disabled = 0
-                AND itemdef.allow_sales = 1
                 AND itm.is_sales_item = 1
                 AND itm.is_fixed_asset = 0
                 {condition}
@@ -1195,6 +1194,10 @@ def create_customer(
     gender=None,
     nationality=None,
     method="create",
+    emirate=None,
+    anniversay=None,
+    location=None,
+    family_size=None,
 ):
     pos_profile = json.loads(pos_profile_doc)
     if method == "create":
@@ -1213,6 +1216,10 @@ def create_customer(
                     "customer_type": customer_type,
                     "gender": gender,
                     "nationality": nationality,
+                    "emirate": emirate,
+                    "location": location,
+                    "anniversay": anniversay,
+                    "family_size": family_size,
                 }
             )
             if customer_group:
@@ -1240,6 +1247,10 @@ def create_customer(
         customer_doc.customer_group = customer_group
         customer_doc.gender = gender
         customer_doc.nationality = nationality
+        customer_doc.emirate = emirate
+        customer_doc.location = location
+        customer_doc.anniversay = anniversay
+        customer_doc.family_size = family_size
         customer_doc.save()
         if mobile_no != customer_doc.mobile_no:
             set_customer_info(customer_doc.name, "mobile_no", mobile_no)

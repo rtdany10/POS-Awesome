@@ -45,7 +45,6 @@
                   background-color="white"
                   hide-details
                   v-model="mobile_no"
-                  :required="!skip_loyalty"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -56,7 +55,6 @@
                   background-color="white"
                   hide-details
                   v-model="email_id"
-                  :required="!skip_loyalty"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -65,7 +63,6 @@
                   label="Gender"
                   :items="genders"
                   v-model="gender"
-                  :required="!skip_loyalty"
                 ></v-select>
               </v-col>
               <v-col cols="6">
@@ -80,9 +77,48 @@
                   background-color="white"
                   :no-data-text="__('Countries not found')"
                   hide-details
-                  :required="!skip_loyalty"
                 >
                 </v-autocomplete>
+              </v-col>
+              <v-col cols="6">
+                <v-autocomplete
+                  clearable
+                  dense
+                  auto-select-first
+                  color="primary"
+                  :label="frappe._('Emirate')"
+                  v-model="emirate"
+                  :items="emirates"
+                  background-color="white"
+                  :no-data-text="__('Emirates not found')"
+                  hide-details
+                >
+                </v-autocomplete>
+              </v-col>
+              <v-col cols="6">
+                <v-autocomplete
+                  clearable
+                  dense
+                  auto-select-first
+                  color="primary"
+                  :label="frappe._('Family Size')"
+                  v-model="family_size"
+                  :items="family_sizes"
+                  background-color="white"
+                  :no-data-text="__('Family Sizes not found')"
+                  hide-details
+                >
+                </v-autocomplete>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  dense
+                  color="primary"
+                  :label="frappe._('Location')"
+                  background-color="white"
+                  hide-details
+                  v-model="location"
+                ></v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-autocomplete
@@ -115,6 +151,68 @@
                   required
                 >
                 </v-autocomplete>
+              </v-col>
+              <v-col cols="6">
+                <v-menu
+                    v-model="birthday_menu"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                >
+                  <template v-slot:activator="{ props }">
+                      <v-text-field
+                          v-model="birthday"
+                          label="Birthday"
+                          readonly
+                          outlined
+                          density="compact"
+                          variant="outlined"
+                          background-color="white"
+                          clearable
+                          color="primary"
+                          hide-details
+                          v-bind="props"
+                          prepend-inner-icon="mdi-calendar"
+                      />
+                  </template>
+                  <v-date-picker
+                      v-model="birthday"
+                      no-title
+                      color="primary"
+                      @input="birthday_menu = false"
+                      @update:model-value="onBirthdaySelect()"
+                  />
+                </v-menu>
+              </v-col>
+              <v-col cols="6">
+                <v-menu
+                    v-model="anniversary_menu"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                >
+                  <template v-slot:activator="{ props }">
+                      <v-text-field
+                          v-model="anniversary"
+                          label="Anniversary"
+                          readonly
+                          outlined
+                          density="compact"
+                          variant="outlined"
+                          background-color="white"
+                          clearable
+                          color="primary"
+                          hide-details
+                          v-bind="props"
+                          prepend-inner-icon="mdi-calendar"
+                      />
+                  </template>
+                  <v-date-picker
+                      v-model="anniversary"
+                      no-title
+                      color="primary"
+                      @input="anniversary_menu = false"
+                      @update:model-value="onAnniversarySelect()"
+                  />
+                </v-menu>
               </v-col>
               <v-col cols="6" v-if="!loyalty_program">
                 <v-checkbox
@@ -192,9 +290,32 @@ export default {
     nationality: '',
     countries: [],
     skip_loyalty: false,
+    emirate: '',
+    emirates: [
+      "Abu Dhabi",
+      "Ajman",
+      "Dubai",
+      "Fujairah",
+      "Ras Al Khaimah",
+      "Sharjah",
+      "Umm Al Quwain",
+    ],
+    family_size: '',
+    family_sizes: ['1', '2', '3', '4', '5', '6', '>6'],
+    anniversary_menu: false,
+    anniversary: null,
+    location: '',
   }),
   watch: {},
   methods: {
+    onAnniversarySelect() {
+      this.anniversary = frappe.datetime.obj_to_str((new Date(this.anniversary)));
+      this.anniversary_menu = false;
+    },
+    onBirthdaySelect() {
+      this.birthday = frappe.datetime.obj_to_str((new Date(this.birthday)));
+      this.birthday_menu = false;
+    },
     close_dialog() {
       this.customerDialog = false;
       this.clear_customer();
@@ -214,6 +335,11 @@ export default {
       this.gender = '';
       this.loyalty_points = null;
       this.loyalty_program = null;
+      this.skip_loyalty = false;
+      this.anniversary = null;
+      this.emirate = '';
+      this.location = '';
+      this.family_size = '';
     },
     getCustomerGroups() {
       if (this.groups.length > 0) return;
@@ -302,39 +428,39 @@ export default {
         });
         return;
       }
-      if (!this.skip_loyalty) {
-        if (!this.gender) {
-          evntBus.$emit('show_mesage', {
-            text: __('Gender is required for loyalty enrollment.'),
-            color: 'error',
-          });
-          return;
-        }
+      // if (!this.skip_loyalty) {
+      //   if (!this.gender) {
+      //     evntBus.$emit('show_mesage', {
+      //       text: __('Gender is required for loyalty enrollment.'),
+      //       color: 'error',
+      //     });
+      //     return;
+      //   }
 
-        if (!this.mobile_no) {
-          evntBus.$emit('show_mesage', {
-            text: __('Mobile number is required for loyalty enrollment.'),
-            color: 'error',
-          });
-          return;
-        }
+      //   if (!this.mobile_no) {
+      //     evntBus.$emit('show_mesage', {
+      //       text: __('Mobile number is required for loyalty enrollment.'),
+      //       color: 'error',
+      //     });
+      //     return;
+      //   }
 
-        if (!this.email_id) {
-          evntBus.$emit('show_mesage', {
-            text: __('Email ID is required for loyalty enrollment.'),
-            color: 'error',
-          });
-          return;
-        }
+      //   if (!this.email_id) {
+      //     evntBus.$emit('show_mesage', {
+      //       text: __('Email ID is required for loyalty enrollment.'),
+      //       color: 'error',
+      //     });
+      //     return;
+      //   }
 
-        if (!this.nationality) {
-          evntBus.$emit('show_mesage', {
-            text: __('Nationality is required for loyalty enrollment.'),
-            color: 'error',
-          });
-          return;
-        }
-      }
+      //   if (!this.nationality) {
+      //     evntBus.$emit('show_mesage', {
+      //       text: __('Nationality is required for loyalty enrollment.'),
+      //       color: 'error',
+      //     });
+      //     return;
+      //   }
+      // }
       if (this.customer_name) {
         const vm = this;
         const args = {
@@ -346,6 +472,11 @@ export default {
           email_id: this.email_id,
           referral_code: this.referral_code,
           birthday: this.birthday,
+          anniversary: this.anniversary,
+          skip_loyalty: this.skip_loyalty,
+          family_size: this.family_size,
+          location: this.location,
+          emirate: this.emirate,
           customer_group: this.group,
           territory: this.territory,
           customer_type: this.customer_type,
@@ -402,6 +533,10 @@ export default {
         this.loyalty_points = data.loyalty_points;
         this.loyalty_program = data.loyalty_program;
         this.gender = data.gender;
+        this.anniversary = data.anniversary;
+        this.location = data.location;
+        this.emirate = data.emirate;
+        this.family_size = data.family_size;
       }
     });
     evntBus.$on('register_pos_profile', (data) => {

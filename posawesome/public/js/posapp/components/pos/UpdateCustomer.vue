@@ -404,39 +404,40 @@ export default {
       //   });
       //   return;
       // }
-      // if (!this.skip_loyalty) {
-      //   if (!this.gender) {
-      //     evntBus.$emit('show_mesage', {
-      //       text: __('Gender is required for loyalty enrollment.'),
-      //       color: 'error',
-      //     });
-      //     return;
-      //   }
+      if (!this.skip_loyalty) {
+        // if (!this.gender) {
+        //   evntBus.$emit('show_mesage', {
+        //     text: __('Gender is required for loyalty enrollment.'),
+        //     color: 'error',
+        //   });
+        //   return;
+        // }
 
-      //   if (!this.mobile_no) {
-      //     evntBus.$emit('show_mesage', {
-      //       text: __('Mobile number is required for loyalty enrollment.'),
-      //       color: 'error',
-      //     });
-      //     return;
-      //   }
+        if (!this.mobile_no) {
+          evntBus.$emit('show_mesage', {
+            text: __('Mobile number is required for loyalty enrollment.'),
+            color: 'error',
+          });
+          return;
+        }
 
-      //   if (!this.email_id) {
-      //     evntBus.$emit('show_mesage', {
-      //       text: __('Email ID is required for loyalty enrollment.'),
-      //       color: 'error',
-      //     });
-      //     return;
-      //   }
+        if (!this.email_id) {
+          evntBus.$emit('show_mesage', {
+            text: __('Email ID is required for loyalty enrollment.'),
+            color: 'error',
+          });
+          return;
+        }
 
-      //   if (!this.nationality) {
-      //     evntBus.$emit('show_mesage', {
-      //       text: __('Nationality is required for loyalty enrollment.'),
-      //       color: 'error',
-      //     });
-      //     return;
-      //   }
-      // }
+        // if (!this.nationality) {
+        //   evntBus.$emit('show_mesage', {
+        //     text: __('Nationality is required for loyalty enrollment.'),
+        //     color: 'error',
+        //   });
+        //   return;
+        // }
+      }
+
       if (this.customer_name) {
         const vm = this;
         const args = {

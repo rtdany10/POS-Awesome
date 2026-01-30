@@ -12,7 +12,7 @@
       outlined
       background-color="white"
       :no-data="__('Customer not found')"
-      :filter="customFilter"
+      :custom-filter="customFilter"
       :disabled="readonly"
       hide-details
       append-inner-icon="mdi-plus"
@@ -50,7 +50,7 @@ export default {
   },
 
   methods: {
-    get_customer_names() {
+    async get_customer_names() {
       const vm = this;
       if (this.customers.length > 0) {
         return;
@@ -59,25 +59,24 @@ export default {
         vm.customers = JSON.parse(localStorage.getItem('customer_storage'));
         return;
       }
-      frappe.call({
+      let r = await frappe.call({
         method: 'posawesome.posawesome.api.posapp.get_customer_names',
         args: {
           pos_profile: this.pos_profile.pos_profile,
         },
-        callback: function (r) {
-          if (r.message) {
-            vm.customers = r.message;
-            console.info('loadCustomers');
-            if (vm.pos_profile.posa_local_storage) {
-              localStorage.setItem('customer_storage', '');
-              localStorage.setItem(
-                'customer_storage',
-                JSON.stringify(r.message)
-              );
-            }
-          }
-        },
       });
+
+      if (r.message) {
+        this.customers = r.message;
+        console.info('loadCustomers');
+        if (this.pos_profile.posa_local_storage) {
+          localStorage.setItem('customer_storage', '');
+          localStorage.setItem(
+            'customer_storage',
+            JSON.stringify(r.message)
+          );
+        }
+      }
     },
     new_customer() {
       console.log("hiiiiii");
@@ -87,6 +86,7 @@ export default {
       evntBus.$emit('open_update_customer', this.customer_info);
     },
     customFilter(item, queryText, itemText) {
+      console.log(item);
       const textOne = item.customer_name
         ? item.customer_name.toLowerCase()
         : '';

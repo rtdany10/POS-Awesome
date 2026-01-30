@@ -85,23 +85,10 @@ export default {
     edit_customer() {
       evntBus.$emit('open_update_customer', this.customer_info);
     },
-    customFilter(item, queryText, itemText) {
-      console.log(item);
-      const textOne = item.customer_name
-        ? item.customer_name.toLowerCase()
-        : '';
-      const textTwo = item.tax_id ? item.tax_id.toLowerCase() : '';
-      const textThree = item.email_id ? item.email_id.toLowerCase() : '';
-      const textFour = item.mobile_no ? item.mobile_no.toLowerCase() : '';
-      const textFifth = item.name.toLowerCase();
-      const searchText = queryText.toLowerCase();
-
-      return (
-        textOne.indexOf(searchText) > -1 ||
-        textTwo.indexOf(searchText) > -1 ||
-        textThree.indexOf(searchText) > -1 ||
-        textFour.indexOf(searchText) > -1 ||
-        textFifth.indexOf(searchText) > -1
+    customFilter(itemText, queryText, item) {
+      const query = queryText.toLowerCase();
+      return Object.values(item.raw).some(val =>
+        String(val).toLowerCase().includes(query)
       );
     },
   },

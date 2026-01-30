@@ -16,6 +16,7 @@ def after_insert(doc, method):
 
 def validate(doc, method):
     validate_referral_code(doc)
+    validate_mobile_no(doc)
 
 
 def create_customer_referral_code(doc):
@@ -49,3 +50,20 @@ def validate_referral_code(doc):
             exist = frappe.db.exists("Referral Code", {"referral_code": referral_code})
         if not exist:
             frappe.throw(_("This Referral Code {0} not exists").format(referral_code))
+
+
+def validate_mobile_no(doc):
+    if not doc.mobile_no:
+        return
+
+    exist = frappe.db.get_value(
+        "Customer",
+        {"mobile_no": doc.mobile_no, "name": ["!=", doc.name]},
+    )
+
+    if exist:
+        frappe.throw(
+            _("This Mobile No {0} is already assigned to another customer {1}").format(
+                doc.mobile_no, exist
+            )
+        )

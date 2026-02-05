@@ -301,7 +301,7 @@ export default {
       this.email_id = '';
       this.referral_code = '';
       this.birthday = '';
-      this.group = frappe.defaults.get_user_default('Customer Group');
+      this.group = frappe.defaults.get_user_default('Customer Group') || "Tayn Retail Customers";
       this.territory = frappe.defaults.get_user_default('Territory');
       this.nationality = frappe.defaults.get_user_default('Country');
       this.customer_id = '';
@@ -527,7 +527,7 @@ export default {
     this.getGenders();
     this.getCountries();
     // set default values for customer group and territory from user defaults
-    this.group = frappe.defaults.get_user_default('Customer Group');
+    this.group = frappe.defaults.get_user_default('Customer Group') || "Tayn Retail Customers";
     this.territory = frappe.defaults.get_user_default('Territory');
     this.nationality = frappe.defaults.get_user_default('Country');
   },

@@ -31,7 +31,7 @@
                 <v-text-field
                   dense
                   color="primary"
-                  :label="frappe._('Mobile No')"
+                  :label="frappe._('Mobile No') + ' *'"
                   background-color="white"
                   hide-details
                   v-model="mobile_no"
@@ -280,7 +280,13 @@ export default {
     anniversary: null,
     location: '',
   }),
-  watch: {},
+  watch: {
+    customer_name(newVal) {
+      if (newVal) {
+        this.customer_name = newVal.toUpperCase();
+      }
+    },
+  },
   methods: {
     onAnniversarySelect() {
       this.anniversary = frappe.datetime.obj_to_str((new Date(this.anniversary)));
@@ -354,19 +360,6 @@ export default {
     },
     getGenders() {
       this.genders = ["Male", "Female", "Prefer not to say"]
-      // const vm = this;
-      // frappe.db
-      //   .get_list('Gender', {
-      //     fields: ['name'],
-      //     page_length: 10,
-      //   })
-      //   .then((data) => {
-      //     if (data.length > 0) {
-      //       data.forEach((el) => {
-      //         vm.genders.push(el.name);
-      //       });
-      //     }
-      //   });
     },
     async getCountries() {
       const vm = this;
@@ -397,22 +390,7 @@ export default {
         });
         return;
       }
-      // if (!this.territory) {
-      //   evntBus.$emit('show_mesage', {
-      //     text: __('Customer territory is required.'),
-      //     color: 'error',
-      //   });
-      //   return;
-      // }
       if (!this.skip_loyalty) {
-        // if (!this.gender) {
-        //   evntBus.$emit('show_mesage', {
-        //     text: __('Gender is required for loyalty enrollment.'),
-        //     color: 'error',
-        //   });
-        //   return;
-        // }
-
         if (!this.mobile_no) {
           evntBus.$emit('show_mesage', {
             text: __('Mobile number is required for loyalty enrollment.'),
@@ -420,22 +398,6 @@ export default {
           });
           return;
         }
-
-        if (!this.email_id) {
-          evntBus.$emit('show_mesage', {
-            text: __('Email ID is required for loyalty enrollment.'),
-            color: 'error',
-          });
-          return;
-        }
-
-        // if (!this.nationality) {
-        //   evntBus.$emit('show_mesage', {
-        //     text: __('Nationality is required for loyalty enrollment.'),
-        //     color: 'error',
-        //   });
-        //   return;
-        // }
       }
 
       if (this.customer_name) {

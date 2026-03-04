@@ -391,7 +391,7 @@ export default {
         return;
       }
       if (!this.skip_loyalty) {
-        if (!this.mobile_no) {
+        if (!this.mobile_no || this.mobile_no === '+9715' || this.mobile_no.length < 10) {
           evntBus.$emit('show_mesage', {
             text: __('Mobile number is required for loyalty enrollment.'),
             color: 'error',

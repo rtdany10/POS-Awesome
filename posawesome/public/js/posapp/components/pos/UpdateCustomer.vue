@@ -391,9 +391,9 @@ export default {
         return;
       }
       if (!this.skip_loyalty) {
-        if (!this.mobile_no || this.mobile_no.length < 10) {
+        if (!this.mobile_no || this.mobile_no.length != 13) {
           evntBus.$emit('show_mesage', {
-            text: __('Mobile number is required for loyalty enrollment.'),
+            text: __('13-digit mobile number is required for loyalty enrollment.'),
             color: 'error',
           });
           return;

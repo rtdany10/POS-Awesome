@@ -208,6 +208,7 @@ def get_items(pos_profile, price_list=None, item_group="", search_value="", barc
                 AND itemdef.company = "{company}"
             WHERE
                 itm.disabled = 0
+                AND itemdef.allow_sales = 1
                 AND itm.is_sales_item = 1
                 AND itm.is_fixed_asset = 0
                 {condition}
@@ -733,6 +734,8 @@ def submit_invoice(invoice, data):
     invoice_doc.update(invoice)
     if invoice.get("posa_delivery_date"):
         invoice_doc.update_stock = 0
+    else:
+        invoice_doc.update_stock = 1
     mop_cash_list = [
         i.mode_of_payment
         for i in invoice_doc.payments

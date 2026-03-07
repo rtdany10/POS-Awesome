@@ -923,7 +923,7 @@ export default {
       });
     },
     set_rest_amount(idx) {
-      this.clear_all_amounts();
+      // this.clear_all_amounts();
       this.invoice_doc.payments[idx-1].amount = this.diff_payment;
       console.log(this.invoice_doc.payments[idx-1].amount);
     },

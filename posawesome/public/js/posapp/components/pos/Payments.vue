@@ -89,7 +89,6 @@
                 hide-details
                 :rules="[isNumber]"
                 :prefix="currencySymbol(invoice_doc.currency)"
-                @update:focused="(isFocused) => isFocused && set_rest_amount(payment.idx)"
                 :readonly="invoice_doc.is_return"
               ></v-text-field>
             </v-col>

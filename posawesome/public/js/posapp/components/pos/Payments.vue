@@ -109,7 +109,7 @@
                 class=""
                 color="primary"
                 dark
-                @click="set_rest_amount(payment.idx)"
+                @click="set_full_amount(payment.idx)"
                 >{{ payment.mode_of_payment }}</v-btn
               >
             </v-col>
@@ -925,7 +925,7 @@ export default {
     set_rest_amount(idx) {
       // this.clear_all_amounts();
       this.invoice_doc.payments[idx-1].amount = this.diff_payment;
-      console.log(this.invoice_doc.payments[idx-1].amount);
+      // console.log(this.invoice_doc.payments[idx-1].amount);
     },
     clear_all_amounts() {
       this.invoice_doc.payments.forEach((payment) => {

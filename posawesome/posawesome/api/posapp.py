@@ -1224,6 +1224,7 @@ def create_customer(
                     "anniversay": anniversay,
                     "family_size": family_size,
                     "is_pos_customer": 1,
+                    "custom_cost_center": pos_profile.get("cost_center"),
                 }
             )
             if customer_group:
@@ -1256,6 +1257,7 @@ def create_customer(
         customer_doc.anniversay = anniversay
         customer_doc.family_size = family_size
         customer_doc.is_pos_customer = 1
+        # customer_doc.custom_cost_center = pos_profile.get("cost_center")
         customer_doc.save()
         if mobile_no != customer_doc.mobile_no:
             set_customer_info(customer_doc.name, "mobile_no", mobile_no)

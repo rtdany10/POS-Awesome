@@ -15,8 +15,6 @@
       :custom-filter="customFilter"
       :disabled="readonly"
       hide-details
-      append-inner-icon="mdi-plus"
-      @click:append-inner="new_customer"
       prepend-inner-icon="mdi-account-edit"
       @click:prepend-inner="edit_customer"
     />

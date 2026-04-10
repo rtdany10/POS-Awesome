@@ -1204,6 +1204,8 @@ def create_customer(
 ):
     pos_profile = json.loads(pos_profile_doc)
     if method == "create":
+        if not pos_profile.get("posa_allow_create_customer"):
+            frappe.throw(_("Not allowed to create customer for this POS Profile"))
         is_exist = frappe.db.exists("Customer", {"customer_name": customer_name})
         if pos_profile.get("posa_allow_duplicate_customer_names") or not is_exist:
             customer = frappe.get_doc(

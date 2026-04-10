@@ -15,6 +15,8 @@
       :custom-filter="customFilter"
       :disabled="readonly"
       hide-details
+      :append-inner-icon="canCreateCustomer ? 'mdi-plus' : undefined"
+      @click:append-inner="new_customer"
       prepend-inner-icon="mdi-account-edit"
       @click:prepend-inner="edit_customer"
     />
@@ -60,7 +62,7 @@ export default {
       let r = await frappe.call({
         method: 'posawesome.posawesome.api.posapp.get_customer_names',
         args: {
-          pos_profile: this.pos_profile.pos_profile,
+          pos_profile: this.pos_profile,
         },
       });
 
@@ -77,7 +79,13 @@ export default {
       }
     },
     new_customer() {
-      console.log("hiiiiii");
+      if (!this.canCreateCustomer) {
+        evntBus.$emit('show_mesage', {
+          text: __('You are not allowed to create a customer in this POS Profile.'),
+          color: 'error',
+        });
+        return;
+      }
       evntBus.$emit('open_update_customer', null);
     },
     edit_customer() {
@@ -91,16 +99,20 @@ export default {
     },
   },
 
-  computed: {},
+  computed: {
+    canCreateCustomer() {
+      return Boolean(this.pos_profile?.posa_allow_create_customer);
+    },
+  },
 
   created: function () {
     this.$nextTick(function () {
-      evntBus.$on('register_pos_profile', (pos_profile) => {
-        this.pos_profile = pos_profile;
+      evntBus.$on('register_pos_profile', (data) => {
+        this.pos_profile = data.pos_profile;
         this.get_customer_names();
       });
-      evntBus.$on('payments_register_pos_profile', (pos_profile) => {
-        this.pos_profile = pos_profile;
+      evntBus.$on('payments_register_pos_profile', (data) => {
+        this.pos_profile = data.pos_profile;
         this.get_customer_names();
       });
       evntBus.$on('set_customer', (customer) => {

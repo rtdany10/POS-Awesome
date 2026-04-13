@@ -613,7 +613,7 @@ def get_customer_names(pos_profile):
             """
             SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address
             FROM `tabCustomer`
-            WHERE {0}
+            WHERE {0} AND is_pos_customer = 0
             ORDER by name
             """.format(
                 condition
@@ -1204,6 +1204,8 @@ def create_customer(
 ):
     pos_profile = json.loads(pos_profile_doc)
     if method == "create":
+        if not pos_profile.get("posa_allow_create_customer"):
+            frappe.throw(_("Not allowed to create customer for this POS Profile"))
         is_exist = frappe.db.exists("Customer", {"customer_name": customer_name})
         if pos_profile.get("posa_allow_duplicate_customer_names") or not is_exist:
             customer = frappe.get_doc(

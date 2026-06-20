@@ -11,7 +11,7 @@ from erpnext.accounts.doctype.sales_invoice.sales_invoice import get_bank_cash_a
 from erpnext.stock.get_item_details import get_item_details
 from erpnext.accounts.doctype.pos_profile.pos_profile import get_item_groups
 from frappe.utils.background_jobs import enqueue
-from erpnext.accounts.party import get_party_bank_account
+from erpnext.accounts.doctype.bank_account.bank_account import get_party_bank_account
 from erpnext.stock.doctype.batch.batch import (
     get_batch_qty,
 )

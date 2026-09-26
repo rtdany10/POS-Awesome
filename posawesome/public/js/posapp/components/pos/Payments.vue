@@ -360,36 +360,36 @@
               append-icon="mdi-plus"
               @click:append="new_address"
             >
-              <template v-slot:item="data">
-                <template>
-                    <v-list-item-title
-                      class="primary--text subtitle-1"
-                      v-html="data.item.raw.address_title"
-                    ></v-list-item-title>
-                    <v-list-item-title
-                      v-html="data.item.raw.address_line1"
-                    ></v-list-item-title>
-                    <v-list-item-subtitle
-                      v-if="data.item.raw.custoaddress_line2mer_name"
-                      v-html="data.item.raw.address_line2"
-                    ></v-list-item-subtitle>
-                    <v-list-item-subtitle
-                      v-if="data.item.raw.city"
-                      v-html="data.item.raw.city"
-                    ></v-list-item-subtitle>
-                    <v-list-item-subtitle
-                      v-if="data.item.raw.state"
-                      v-html="data.item.raw.state"
-                    ></v-list-item-subtitle>
-                    <v-list-item-subtitle
-                      v-if="data.item.raw.country"
-                      v-html="data.item.raw.mobile_no"
-                    ></v-list-item-subtitle>
-                    <v-list-item-subtitle
-                      v-if="data.item.raw.address_type"
-                      v-html="data.item.raw.address_type"
-                    ></v-list-item-subtitle>
-                </template>
+              <template v-slot:item="{ item, props: itemProps }">
+                <v-list-item v-bind="itemProps" :title="undefined">
+                  <v-list-item-title
+                    class="primary--text subtitle-1"
+                    v-html="item.raw.address_title"
+                  ></v-list-item-title>
+                  <v-list-item-title
+                    v-html="item.raw.address_line1"
+                  ></v-list-item-title>
+                  <v-list-item-subtitle
+                    v-if="item.raw.custoaddress_line2mer_name"
+                    v-html="item.raw.address_line2"
+                  ></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    v-if="item.raw.city"
+                    v-html="item.raw.city"
+                  ></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    v-if="item.raw.state"
+                    v-html="item.raw.state"
+                  ></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    v-if="item.raw.country"
+                    v-html="item.raw.mobile_no"
+                  ></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    v-if="item.raw.address_type"
+                    v-html="item.raw.address_type"
+                  ></v-list-item-subtitle>
+                </v-list-item>
               </template>
             </v-autocomplete>
           </v-col>
@@ -600,17 +600,15 @@
               :custom-filter="salesPersonFilter"
               :disabled="readonly"
             >
-              <template v-slot:item="data">
-                <template>
-                    <v-list-item-title
-                      class="primary--text subtitle-1"
-                      v-html="data.item.raw.sales_person_name"
-                    ></v-list-item-title>
-                    <v-list-item-subtitle
-                      v-if="data.item.raw.sales_person_name != data.item.raw.name"
-                      v-html="`ID: ${data.item.raw.name}`"
-                    ></v-list-item-subtitle>
-                </template>
+              <template v-slot:item="{ item, props: itemProps }">
+                <v-list-item
+                  v-bind="itemProps"
+                  :subtitle="
+                    item.raw.sales_person_name != item.raw.name
+                      ? `ID: ${item.raw.name}`
+                      : undefined
+                  "
+                ></v-list-item>
               </template>
             </v-autocomplete>
           </v-col>

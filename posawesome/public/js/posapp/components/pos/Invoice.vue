@@ -77,16 +77,11 @@
             :disabled="readonly"
             @update:model-value="update_delivery_charges()"
           >
-            <template v-slot:item="data">
-              <template>
-                  <v-list-item-title
-                    class="primary--text subtitle-1"
-                    v-html="data.item.raw.name"
-                  ></v-list-item-title>
-                  <v-list-item-subtitle
-                    v-html="`Rate: ${data.item.raw.rate}`"
-                  ></v-list-item-subtitle>
-              </template>
+            <template v-slot:item="{ item, props: itemProps }">
+              <v-list-item
+                v-bind="itemProps"
+                :subtitle="`Rate: ${item.raw.rate}`"
+              ></v-list-item>
             </template>
           </v-autocomplete>
         </v-col>

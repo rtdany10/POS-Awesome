@@ -67,23 +67,24 @@
             :label="frappe._('Delivery Charges')"
             v-model="selcted_delivery_charges"
             :items="delivery_charges"
-            item-text="name"
+            item-title="name"
+            item-value="name"
             return-object
             background-color="white"
             :no-data-text="__('Charges not found')"
             hide-details
-            :filter="deliveryChargesFilter"
+            :custom-filter="deliveryChargesFilter"
             :disabled="readonly"
-            @change="update_delivery_charges()"
+            @update:model-value="update_delivery_charges()"
           >
             <template v-slot:item="data">
               <template>
                   <v-list-item-title
                     class="primary--text subtitle-1"
-                    v-html="data.item.name"
+                    v-html="data.item.raw.name"
                   ></v-list-item-title>
                   <v-list-item-subtitle
-                    v-html="`Rate: ${data.item.rate}`"
+                    v-html="`Rate: ${data.item.raw.rate}`"
                   ></v-list-item-subtitle>
               </template>
             </template>
@@ -411,7 +412,8 @@
                   <v-autocomplete
                     v-model="item.serial_no_selected"
                     :items="item.serial_no_data"
-                    item-text="serial_no"
+                    item-title="serial_no"
+                    item-value="serial_no"
                     outlined
                     dense
                     chips
@@ -419,7 +421,7 @@
                     small-chips
                     :label="frappe._('Serial No')"
                     multiple
-                    @change="set_serial_no(item)"
+                    @update:model-value="set_serial_no(item)"
                   />
                 </v-col>
 
@@ -2463,8 +2465,9 @@ export default {
         },
       });
     },
-    deliveryChargesFilter(item, queryText, itemText) {
-      const textOne = item.name.toLowerCase();
+    deliveryChargesFilter(itemTitle, queryText, item) {
+      const raw = item.raw || item;
+      const textOne = (raw.name || "").toLowerCase();
       const searchText = queryText.toLowerCase();
       return textOne.indexOf(searchText) > -1;
     },

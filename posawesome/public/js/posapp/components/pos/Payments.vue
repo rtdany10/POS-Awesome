@@ -351,12 +351,12 @@
               :label="frappe._('Address')"
               v-model="invoice_doc.shipping_address_name"
               :items="addresses"
-              item-text="address_title"
+              item-title="address_title"
               item-value="name"
               background-color="white"
               no-data-text="Address not found"
               hide-details
-              :filter="addressFilter"
+              :custom-filter="addressFilter"
               append-icon="mdi-plus"
               @click:append="new_address"
             >
@@ -364,30 +364,30 @@
                 <template>
                     <v-list-item-title
                       class="primary--text subtitle-1"
-                      v-html="data.item.address_title"
+                      v-html="data.item.raw.address_title"
                     ></v-list-item-title>
                     <v-list-item-title
-                      v-html="data.item.address_line1"
+                      v-html="data.item.raw.address_line1"
                     ></v-list-item-title>
                     <v-list-item-subtitle
-                      v-if="data.item.custoaddress_line2mer_name"
-                      v-html="data.item.address_line2"
+                      v-if="data.item.raw.custoaddress_line2mer_name"
+                      v-html="data.item.raw.address_line2"
                     ></v-list-item-subtitle>
                     <v-list-item-subtitle
-                      v-if="data.item.city"
-                      v-html="data.item.city"
+                      v-if="data.item.raw.city"
+                      v-html="data.item.raw.city"
                     ></v-list-item-subtitle>
                     <v-list-item-subtitle
-                      v-if="data.item.state"
-                      v-html="data.item.state"
+                      v-if="data.item.raw.state"
+                      v-html="data.item.raw.state"
                     ></v-list-item-subtitle>
                     <v-list-item-subtitle
-                      v-if="data.item.country"
-                      v-html="data.item.mobile_no"
+                      v-if="data.item.raw.country"
+                      v-html="data.item.raw.mobile_no"
                     ></v-list-item-subtitle>
                     <v-list-item-subtitle
-                      v-if="data.item.address_type"
-                      v-html="data.item.address_type"
+                      v-if="data.item.raw.address_type"
+                      v-html="data.item.raw.address_type"
                     ></v-list-item-subtitle>
                 </template>
               </template>
@@ -592,23 +592,23 @@
               :label="frappe._('Sales Person')"
               v-model="sales_person"
               :items="sales_persons"
-              item-text="sales_person_name"
+              item-title="sales_person_name"
               item-value="name"
               background-color="white"
               :no-data-text="__('Sales Person not found')"
               hide-details
-              :filter="salesPersonFilter"
+              :custom-filter="salesPersonFilter"
               :disabled="readonly"
             >
               <template v-slot:item="data">
                 <template>
                     <v-list-item-title
                       class="primary--text subtitle-1"
-                      v-html="data.item.sales_person_name"
+                      v-html="data.item.raw.sales_person_name"
                     ></v-list-item-title>
                     <v-list-item-subtitle
-                      v-if="data.item.sales_person_name != data.item.name"
-                      v-html="`ID: ${data.item.name}`"
+                      v-if="data.item.raw.sales_person_name != data.item.raw.name"
+                      v-html="`ID: ${data.item.raw.name}`"
                     ></v-list-item-subtitle>
                 </template>
               </template>
@@ -1040,18 +1040,19 @@ export default {
         },
       });
     },
-    addressFilter(item, queryText, itemText) {
-      const textOne = item.address_title
-        ? item.address_title.toLowerCase()
+    addressFilter(itemTitle, queryText, item) {
+      const raw = item.raw || item;
+      const textOne = raw.address_title
+        ? raw.address_title.toLowerCase()
         : "";
-      const textTwo = item.address_line1
-        ? item.address_line1.toLowerCase()
+      const textTwo = raw.address_line1
+        ? raw.address_line1.toLowerCase()
         : "";
-      const textThree = item.address_line2
-        ? item.address_line2.toLowerCase()
+      const textThree = raw.address_line2
+        ? raw.address_line2.toLowerCase()
         : "";
-      const textFour = item.city ? item.city.toLowerCase() : "";
-      const textFifth = item.name.toLowerCase();
+      const textFour = raw.city ? raw.city.toLowerCase() : "";
+      const textFifth = raw.name.toLowerCase();
       const searchText = queryText.toLowerCase();
       return (
         textOne.indexOf(searchText) > -1 ||
@@ -1090,11 +1091,12 @@ export default {
         },
       });
     },
-    salesPersonFilter(item, queryText, itemText) {
-      const textOne = item.sales_person_name
-        ? item.sales_person_name.toLowerCase()
+    salesPersonFilter(itemTitle, queryText, item) {
+      const raw = item.raw || item;
+      const textOne = raw.sales_person_name
+        ? raw.sales_person_name.toLowerCase()
         : "";
-      const textTwo = item.name.toLowerCase();
+      const textTwo = raw.name.toLowerCase();
       const searchText = queryText.toLowerCase();
 
       return (

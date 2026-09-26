@@ -689,7 +689,7 @@ export default {
       new_line: false,
       delivery_charges: [],
       delivery_charges_rate: 0,
-      selcted_delivery_charges: {},
+      selcted_delivery_charges: null,
       invoice_posting_date: false,
       posting_date: frappe.datetime.nowdate(),
       items_headers: [
@@ -926,7 +926,7 @@ export default {
       this.discount_amount = 0;
       this.additional_discount_percentage = 0;
       this.delivery_charges_rate = 0;
-      this.selcted_delivery_charges = {};
+      this.selcted_delivery_charges = null;
       evntBus.$emit("set_customer_readonly", false);
       this.cancel_dialog = false;
     },
@@ -1021,7 +1021,9 @@ export default {
       doc.return_against = this.invoice_doc.return_against;
       doc.posa_offers = this.posa_offers;
       doc.posa_coupons = this.posa_coupons;
-      doc.posa_delivery_charges = this.selcted_delivery_charges.name;
+      doc.posa_delivery_charges = this.selcted_delivery_charges
+        ? this.selcted_delivery_charges.name
+        : null;
       doc.posa_delivery_charges_rate = this.delivery_charges_rate || 0;
       doc.posting_date = this.posting_date;
       return doc;
@@ -2444,11 +2446,11 @@ export default {
       ) {
         this.delivery_charges = [];
         this.delivery_charges_rate = 0;
-        this.selcted_delivery_charges = {};
+        this.selcted_delivery_charges = null;
         return;
       }
       this.delivery_charges_rate = 0;
-      this.selcted_delivery_charges = {};
+      this.selcted_delivery_charges = null;
       frappe.call({
         method:
           "posawesome.posawesome.api.posapp.get_applicable_delivery_charges",

@@ -30,12 +30,12 @@
                     }}</v-list-item-title>
                 </v-list-item>
                 <v-list-item
-                  @click="print_last_invoice"
-                  v-if="pos_profile.posa_allow_print_last_invoice && this.last_invoice"
+                  @click="open_invoices_dialog"
+                  v-if="pos_profile.posa_allow_print_last_invoice"
                   prepend-icon="mdi-printer"
                 >
                     <v-list-item-title>{{
-                      __('Print Last Invoice')
+                      __('Reprint Invoices')
                     }}</v-list-item-title>
                 </v-list-item>
                 <v-divider class="my-0"></v-divider>
@@ -65,6 +65,72 @@
     <v-snackbar v-model="snack" :timeout="5000" :color="snackColor" top right>
       {{ snackText }}
     </v-snackbar>
+
+    <v-dialog v-model="invoices_dialog" max-width="900px">
+      <v-card>
+        <v-card-title>
+          <span class="headline primary--text">{{ __('Reprint Invoices') }}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-row dense class="mb-2">
+            <v-col cols="12" sm="8">
+              <v-text-field
+                v-model="invoice_search"
+                :label="__('Search by Invoice ID, Customer ID or Name')"
+                prepend-inner-icon="mdi-magnify"
+                variant="outlined"
+                density="compact"
+                clearable
+                hide-details
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="4">
+              <v-text-field
+                v-model="invoice_date"
+                type="date"
+                :label="__('Posting Date')"
+                variant="outlined"
+                density="compact"
+                clearable
+                hide-details
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-table density="compact" class="elevation-1">
+            <thead>
+              <tr>
+                <th v-for="h in invoice_headers" :key="h.value" :class="h.align === 'end' ? 'text-right' : ''">{{ h.title }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in invoices" :key="item.name">
+                <td>{{ item.name }}</td>
+                <td>{{ item.customer_name }}</td>
+                <td>{{ item.posting_date }}</td>
+                <td>{{ (item.posting_time || '').split('.')[0] }}</td>
+                <td class="text-right">{{ item.currency }} {{ item.grand_total }}</td>
+                <td class="text-right">
+                  <v-btn size="small" color="primary" prepend-icon="mdi-printer" @click="print_invoice(item.name)">{{ __('Print') }}</v-btn>
+                </td>
+              </tr>
+              <tr v-if="!invoices.length && !invoices_loading">
+                <td colspan="6" class="text-center">{{ __('No invoices found') }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+          <v-progress-linear v-if="invoices_loading" indeterminate></v-progress-linear>
+          <div class="d-flex align-center justify-end mt-2">
+            <v-btn variant="text" :disabled="invoice_page <= 1 || invoices_loading" @click="change_page(-1)">{{ __('Previous') }}</v-btn>
+            <span class="mx-2">{{ __('Page') }} {{ invoice_page }}</span>
+            <v-btn variant="text" :disabled="!invoices_has_more || invoices_loading" @click="change_page(1)">{{ __('Next') }}</v-btn>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="error" @click="invoices_dialog = false">{{ __('Close') }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-dialog v-model="freeze" persistent max-width="290">
       <v-card>
@@ -109,9 +175,74 @@ export default {
       freezeTitle: '',
       freezeMsg: '',
       last_invoice: '',
+      invoices_dialog: false,
+      invoice_search: '',
+      invoice_date: '',
+      invoice_page: 1,
+      invoices: [],
+      invoices_has_more: false,
+      invoices_loading: false,
+      invoice_headers: [
+        { title: __('Invoice'), value: 'name', sortable: false },
+        { title: __('Customer'), value: 'customer_name', sortable: false },
+        { title: __('Date'), value: 'posting_date', sortable: false },
+        { title: __('Time'), value: 'posting_time', sortable: false },
+        { title: __('Amount'), value: 'grand_total', align: 'end', sortable: false },
+        { title: '', value: 'actions', align: 'end', sortable: false },
+      ],
     };
   },
+  watch: {
+    invoice_date() {
+      this.invoice_page = 1;
+      this.load_invoices();
+    },
+    invoice_search() {
+      clearTimeout(this._search_timer);
+      this._search_timer = setTimeout(() => {
+        this.invoice_page = 1;
+        this.load_invoices();
+      }, 400);
+    },
+  },
   methods: {
+    open_invoices_dialog() {
+      this.invoices_dialog = true;
+      this.invoice_search = '';
+      this.invoice_date = '';
+      this.invoice_page = 1;
+      this.load_invoices();
+    },
+    load_invoices() {
+      this.invoices_loading = true;
+      const request_search = this.invoice_search || '';
+      frappe.call({
+        method: 'posawesome.posawesome.api.posapp.get_pos_profile_invoices',
+        args: {
+          pos_profile: this.pos_profile.name,
+          search: request_search,
+          posting_date: this.invoice_date || '',
+          page: this.invoice_page,
+          page_size: 20,
+        },
+        callback: (r) => {
+          if (r.message) {
+            this.invoices = r.message.invoices;
+            this.invoices_has_more = r.message.has_more;
+          }
+        },
+        always: () => {
+          this.invoices_loading = false;
+        },
+      });
+    },
+    change_page(step) {
+      this.invoice_page += step;
+      this.load_invoices();
+    },
+    print_invoice(name) {
+      this.print_last_invoice(name);
+    },
     changePage(key) {
       this.$emit('changePage', key);
     },
@@ -148,8 +279,9 @@ export default {
         },
       });
     },
-    print_last_invoice() {
-      if (!this.last_invoice) return;
+    print_last_invoice(name) {
+      name = name || this.last_invoice;
+      if (!name) return;
       const print_format =
         this.pos_profile.print_format_for_online ||
         this.pos_profile.print_format;
@@ -157,7 +289,7 @@ export default {
       const url =
         frappe.urllib.get_base_url() +
         '/printview?doctype=Sales%20Invoice&name=' +
-        this.last_invoice +
+        encodeURIComponent(name) +
         '&trigger_print=1' +
         '&format=' +
         print_format +

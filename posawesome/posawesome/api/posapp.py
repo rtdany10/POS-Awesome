@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import json
 import frappe
-from frappe.utils import nowdate, flt, cstr
+from frappe.utils import nowdate, flt, cstr, cint
 from frappe import _
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import get_bank_cash_account
 from erpnext.stock.get_item_details import get_item_details
@@ -1392,6 +1392,45 @@ def search_invoices_for_return(invoice_name, company):
     )
 
     return invoices_list
+
+
+@frappe.whitelist()
+def get_pos_profile_invoices(pos_profile, search="", posting_date=None, page=1, page_size=20):
+    page = max(cint(page), 1)
+    page_size = min(max(cint(page_size), 1), 100)
+    filters = {"pos_profile": pos_profile, "docstatus": 1}
+    if posting_date:
+        filters["posting_date"] = posting_date
+    or_filters = None
+    search = (search or "").strip()
+    if search:
+        like = f"%{search}%"
+        or_filters = [
+            ["name", "like", like],
+            ["customer", "like", like],
+            ["customer_name", "like", like],
+        ]
+
+    invoices = frappe.get_list(
+        "Sales Invoice",
+        filters=filters,
+        or_filters=or_filters,
+        fields=[
+            "name",
+            "customer",
+            "customer_name",
+            "posting_date",
+            "posting_time",
+            "grand_total",
+            "currency",
+            "is_return",
+        ],
+        limit_start=(page - 1) * page_size,
+        limit_page_length=page_size + 1,  # one extra row tells us if a next page exists
+        order_by="posting_date desc, posting_time desc, creation desc",
+    )
+    has_more = len(invoices) > page_size
+    return {"invoices": invoices[:page_size], "has_more": has_more}
 
 
 @frappe.whitelist()

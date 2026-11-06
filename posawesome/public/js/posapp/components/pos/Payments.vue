@@ -89,7 +89,7 @@
                 hide-details
                 :rules="[isNumber]"
                 :prefix="currencySymbol(invoice_doc.currency)"
-                :readonly="invoice_doc.is_return"
+                @blur="normalize_return_amount(payment)"
               ></v-text-field>
             </v-col>
             <v-col
@@ -866,6 +866,7 @@ export default {
     submit_invoice(print) {
       let totalPayedAmount = 0;
       this.invoice_doc.payments.forEach((payment) => {
+        this.normalize_return_amount(payment);
         payment.amount = flt(payment.amount);
         totalPayedAmount += payment.amount;
       });
@@ -918,6 +919,12 @@ export default {
             ? this.invoice_doc.rounded_total || this.invoice_doc.grand_total
             : 0;
       });
+    },
+    normalize_return_amount(payment) {
+      // Return payments are refunds, so they are always negative.
+      if (this.invoice_doc.is_return && this.flt(payment.amount) > 0) {
+        payment.amount = -this.flt(payment.amount);
+      }
     },
     set_rest_amount(idx) {
       // this.clear_all_amounts();
@@ -1358,8 +1365,16 @@ export default {
         }
         if (invoice_doc.is_return) {
           this.is_return = true;
+          // Prefill the refund on the default mode; the cashier can edit it.
+          const refund_total = this.flt(
+            invoice_doc.rounded_total || invoice_doc.grand_total,
+            this.currency_precision
+          );
           invoice_doc.payments.forEach((payment) => {
-            payment.amount = 0;
+            const is_default = default_payment
+              ? payment === default_payment
+              : false;
+            payment.amount = is_default ? refund_total : 0;
             payment.base_amount = 0;
           });
         }

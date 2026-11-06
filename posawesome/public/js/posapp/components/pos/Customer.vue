@@ -31,6 +31,9 @@ import { evntBus } from '../../bus';
 import UpdateCustomer from './UpdateCustomer.vue';
 import { inject } from 'vue';
 
+const CUSTOMER_CACHE_KEY = 'customer_storage';
+const DEFAULT_CUSTOMER_CACHE_MINUTES = 30;
+
 export default {
   setup() {
     const __ = inject('__');
@@ -50,14 +53,49 @@ export default {
   },
 
   methods: {
+    getCustomerCacheTtlMs() {
+      const minutes = parseInt(this.pos_profile.posa_server_cache_duration, 10);
+      return (minutes > 0 ? minutes : DEFAULT_CUSTOMER_CACHE_MINUTES) * 60 * 1000;
+    },
+    readCustomerCache() {
+      try {
+        const cache = JSON.parse(localStorage.getItem(CUSTOMER_CACHE_KEY));
+        const isCurrent =
+          cache &&
+          Array.isArray(cache.customers) &&
+          cache.pos_profile === this.pos_profile.name &&
+          Date.now() - cache.saved_at < this.getCustomerCacheTtlMs();
+        return isCurrent ? cache : null;
+      } catch (e) {
+        return null;
+      }
+    },
+    writeCustomerCache(customers, saved_at = Date.now()) {
+      try {
+        localStorage.setItem(
+          CUSTOMER_CACHE_KEY,
+          JSON.stringify({
+            pos_profile: this.pos_profile.name,
+            saved_at,
+            customers,
+          })
+        );
+      } catch (e) {
+        console.warn('Unable to cache customers', e);
+      }
+    },
     async get_customer_names() {
       const vm = this;
       if (this.customers.length > 0) {
         return;
       }
-      if (vm.pos_profile.posa_local_storage && localStorage.customer_storage) {
-        vm.customers = JSON.parse(localStorage.getItem('customer_storage'));
-        return;
+      if (vm.pos_profile.posa_local_storage) {
+        const cache = vm.readCustomerCache();
+        if (cache) {
+          vm.customers = cache.customers;
+          return;
+        }
+        localStorage.removeItem(CUSTOMER_CACHE_KEY);
       }
       let r = await frappe.call({
         method: 'posawesome.posawesome.api.posapp.get_customer_names',
@@ -70,11 +108,7 @@ export default {
         this.customers = r.message;
         console.info('loadCustomers');
         if (this.pos_profile.posa_local_storage) {
-          localStorage.setItem('customer_storage', '');
-          localStorage.setItem(
-            'customer_storage',
-            JSON.stringify(r.message)
-          );
+          this.writeCustomerCache(r.message);
         }
       }
     },
@@ -120,6 +154,10 @@ export default {
       });
       evntBus.$on('add_customer_to_list', (customer) => {
         this.customers.push(customer);
+        const cache = this.pos_profile.posa_local_storage && this.readCustomerCache();
+        if (cache) {
+          this.writeCustomerCache(this.customers, cache.saved_at);
+        }
       });
       evntBus.$on('set_customer_readonly', (value) => {
         this.readonly = value;

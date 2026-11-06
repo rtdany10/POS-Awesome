@@ -8,8 +8,9 @@
         <v-container>
           <v-row class="mb-4">
             <v-text-field color="primary" :label="__('Invoice ID')" background-color="white" hide-details
-              v-model="invoice_name" dense clearable class="mx-4"></v-text-field>
-            <v-btn text class="ml-2" color="primary" dark @click="search_invoices">{{ __('Search') }}</v-btn>
+              v-model="invoice_name" dense clearable class="mx-4"
+              @keyup.enter="search_invoices"></v-text-field>
+            <v-btn text class="ml-2" color="primary" dark @click="search_invoices()">{{ __('Search') }}</v-btn>
           </v-row>
           <v-row>
             <v-col cols="12" class="pa-1" v-if="dialog_data">
@@ -21,12 +22,19 @@
                 :single-select="true"
                 show-select
                 v-model="selected"
+                :items-per-page="-1"
+                hide-default-footer
               >
                 <template v-slot:item.grand_total="{ item }">
                   {{ currencySymbol(item.currency) }}
                   {{ formtCurrency(item.grand_total) }}
                 </template>
               </v-data-table>
+              <div class="d-flex align-center justify-end mt-2">
+                <v-btn variant="text" :disabled="page <= 1" @click="search_invoices(page - 1)">{{ __('Previous') }}</v-btn>
+                <span class="mx-2">{{ __('Page') }} {{ page }}</span>
+                <v-btn variant="text" :disabled="!has_more" @click="search_invoices(page + 1)">{{ __('Next') }}</v-btn>
+              </div>
             </v-col>
           </v-row>
         </v-container>
@@ -58,6 +66,8 @@ export default {
     dialog_data: '',
     company: '',
     invoice_name: '',
+    page: 1,
+    has_more: false,
     headers: [
       {
         title: __('Customer'),
@@ -94,18 +104,24 @@ export default {
         this.search_invoices();
       }
     },
-    search_invoices() {
+    search_invoices(page = 1) {
       const vm = this;
+      // @click passes the event object; only a number is a page request
+      page = typeof page === 'number' ? page : 1;
       frappe.call({
         method: 'posawesome.posawesome.api.posapp.search_invoices_for_return',
         args: {
           invoice_name: vm.invoice_name,
           company: vm.company,
+          page: page,
         },
         async: false,
         callback: function (r) {
           if (r.message) {
-            vm.dialog_data = r.message;
+            vm.dialog_data = r.message.invoices;
+            vm.has_more = r.message.has_more;
+            vm.page = page;
+            vm.selected = [];
           }
         },
       });
@@ -134,6 +150,9 @@ export default {
               const items = [];
               return_doc.items.forEach((item) => {
                 const new_item = { ...item };
+                // ERPNext matches returned rows to the original rows by name
+                new_item.sales_invoice_item = item.name;
+                delete new_item.name;
                 new_item.qty = item.qty * -1;
                 new_item.stock_qty = item.stock_qty * -1;
                 new_item.amount = item.amount * -1;
@@ -158,6 +177,8 @@ export default {
       this.company = data;
       this.invoice_name = '';
       this.dialog_data = '';
+      this.page = 1;
+      this.has_more = false;
       this.selected = [];
     });
   },

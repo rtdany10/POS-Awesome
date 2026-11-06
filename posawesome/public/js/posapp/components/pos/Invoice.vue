@@ -1047,6 +1047,7 @@ export default {
           posa_notes: item.posa_notes,
           posa_delivery_date: item.posa_delivery_date,
           price_list_rate: item.price_list_rate,
+          sales_invoice_item: item.sales_invoice_item,
         };
         items_list.push(new_item);
       });

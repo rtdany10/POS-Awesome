@@ -564,7 +564,7 @@ def get_customer_groups(pos_profile):
         for data in pos_profile.get("customer_groups"):
             customer_groups.extend(
                 [
-                    "%s" % frappe.db.escape(d.get("name"))
+                    d.get("name")
                     for d in get_child_nodes(
                         "Customer Group", data.get("customer_group")
                     )
@@ -585,13 +585,14 @@ def get_child_nodes(group_type, root):
     )
 
 
-def get_customer_group_condition(pos_profile):
-    cond = "disabled = 0"
+def get_customer_filters(pos_profile):
     customer_groups = get_customer_groups(pos_profile)
     if customer_groups:
-        cond = " customer_group in (%s)" % (", ".join(["%s"] * len(customer_groups)))
-
-    return cond % tuple(customer_groups)
+        filters = {"customer_group": ["in", customer_groups]}
+    else:
+        filters = {"disabled": 0}
+    filters["is_pos_customer"] = 0
+    return filters
 
 
 @frappe.whitelist()
@@ -601,26 +602,26 @@ def get_customer_names(pos_profile):
     if ttl:
         ttl = int(ttl) * 60
 
-    @redis_cache(ttl=ttl or 1800)
+    @redis_cache(ttl=ttl or 1800, user=True)
     def __get_customer_names(pos_profile):
         return _get_customer_names(pos_profile)
 
     def _get_customer_names(pos_profile):
         pos_profile = json.loads(pos_profile)
-        condition = ""
-        condition += get_customer_group_condition(pos_profile)
-        customers = frappe.db.sql(
-            """
-            SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address
-            FROM `tabCustomer`
-            WHERE {0} AND is_pos_customer = 0
-            ORDER by name
-            """.format(
-                condition
-            ),
-            as_dict=1,
+        return frappe.db.get_list(
+            "Customer",
+            filters=get_customer_filters(pos_profile),
+            fields=[
+                "name",
+                "mobile_no",
+                "email_id",
+                "tax_id",
+                "customer_name",
+                "primary_address",
+            ],
+            order_by="name",
+            limit_page_length=0,
         )
-        return customers
 
     if _pos_profile.get("posa_use_server_cache"):
         return __get_customer_names(pos_profile)
